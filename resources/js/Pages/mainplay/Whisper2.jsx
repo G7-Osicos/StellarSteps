@@ -37,7 +37,7 @@ export default function Whisper2() {
                 <BackToMapButton />
                 {/* Background image – new woods view */}
                 <img
-                    src="/assets/img/whisperingwoods/bg 4.webp"
+                    src="/assets/img/whisperingwoods/bg%20%233%20new.webp"
                     alt="Whispering Woods"
                     loading="eager"
                     decoding="async"

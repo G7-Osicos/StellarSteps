@@ -29,7 +29,7 @@ export default function Whisper4End() {
                 <BackToMapButton />
                 {/* Background – forest bg-#2 (step 0) or bg-#2invert (step 1+) */}
                 <img
-                    src="/assets/img/whisperingwoods/bg-%232.webp"
+                    src={step === 0 ? '/assets/img/whisperingwoods/bg-%232.webp' : '/assets/img/whisperingwoods/bg-%232invert.webp'}
                     alt="Whispering Woods"
                     loading="eager"
                     decoding="async"

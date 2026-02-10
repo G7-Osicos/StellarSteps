@@ -7,7 +7,7 @@
         "dev": "vite",
         "images:webp": "node scripts/convert-images-to-webp.mjs",
         "images:responsive": "node scripts/responsive-images.mjs",
-        "images:compress": "node scripts/compress-images.mjs"
+        "images:resize": "node scripts/resize-images.mjs"
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",
