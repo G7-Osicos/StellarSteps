@@ -1,6 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAudio } from '@/contexts/AudioContext';
+import { AUDIO } from '@/config/audio';
 import { useState, useEffect } from 'react';
 import { CircleUserRound, Undo2 } from 'lucide-react';
 
@@ -126,8 +127,19 @@ export default function Mainplay() {
     const [progressBoardClosing, setProgressBoardClosing] = useState(false);
     // Main book content mode: 'map' = stage images/buttons, 'help' = empty book (for Help tab)
     const [activeMainTab, setActiveMainTab] = useState('map');
+    // Help tab phases: 'hidden' = nothing, 'left' = left page only, 'both' = left + right
+    const [helpPhase, setHelpPhase] = useState('hidden');
     const { screenBrightness, textSize, updateSettings } = useSettings() ?? { screenBrightness: 100, textSize: 100, updateSettings: () => {} };
-    const { volume, muted, updateVolume, updateMuted, stopBGM } = useAudio() ?? { volume: 80, muted: false, updateVolume: () => {}, updateMuted: () => {}, stopBGM: () => {} };
+    const { volume, muted, updateVolume, updateMuted, stopBGM, playVoice, stopVoice } =
+        useAudio() ?? {
+            volume: 80,
+            muted: false,
+            updateVolume: () => {},
+            updateMuted: () => {},
+            stopBGM: () => {},
+            playVoice: () => {},
+            stopVoice: () => {},
+        };
     /** Which stages are cleared (1–5). From server (user-specific) or URL params. */
     const [clearedStages, setClearedStages] = useState(() => {
         const p = initialProgress?.clearedStages;
@@ -175,6 +187,25 @@ export default function Mainplay() {
             next[stageIndex] = true;
             return next;
         });
+    }
+
+    function startHelpFlow() {
+        setActiveMainTab('help');
+        setHelpPhase('left');
+        // Stop any in-progress voice before starting help narration
+        stopVoice?.();
+        const page1 = AUDIO.help?.page1;
+        const page2 = AUDIO.help?.page2;
+        if (page1 && playVoice) {
+            playVoice(page1, 1, () => {
+                setHelpPhase('both');
+                if (page2 && playVoice) {
+                    playVoice(page2);
+                }
+            });
+        } else {
+            setHelpPhase('both');
+        }
     }
 
     useEffect(() => {
@@ -470,8 +501,22 @@ export default function Mainplay() {
                                         }
                                       : {}),
                                   ...(tab.id === 'stars' ? { onClick: () => setShowProgressBoard(true) } : {}),
-                                  ...(tab.id === 'help' ? { onClick: () => setActiveMainTab('help') } : {}),
-                                  ...(tab.id === 'map' ? { onClick: () => setActiveMainTab('map') } : {}),
+                                  ...(tab.id === 'help'
+                                      ? {
+                                            onClick: () => {
+                                                startHelpFlow();
+                                            },
+                                        }
+                                      : {}),
+                                  ...(tab.id === 'map'
+                                      ? {
+                                            onClick: () => {
+                                                setActiveMainTab('map');
+                                                setHelpPhase('hidden');
+                                                stopVoice?.();
+                                            },
+                                        }
+                                      : {}),
                               }
                             : { style: menuStyle, className: baseClass + menuLeftClass + ' group transition-all duration-200' };
                         return (
@@ -712,8 +757,8 @@ export default function Mainplay() {
                                 <div className="flex flex-1 min-h-0 w-full">
                                     {/* Left page */}
                                     <div className="w-1/2 h-full relative flex items-center justify-center px-[5%] -ml-4 md:-ml-6">
-                                        {activeMainTab === 'help' ? (
-                                            <div className="flex flex-col gap-8 md:gap-10 items-start justify-center w-full max-w-md pointer-events-auto">
+                                        {activeMainTab === 'help' && helpPhase !== 'hidden' ? (
+                                            <div className="flex flex-col gap-8 md:gap-10 items-start justify-center w-full max-w-md pointer-events-auto animate-fade-in-soft">
                                                 <div className="flex flex-col items-start gap-2">
                                                     <div className="text-amber-800 text-2xl sm:text-3xl font-extrabold tracking-wide">
                                                         Welcome to
@@ -777,8 +822,8 @@ export default function Mainplay() {
                                     {/* Right page */}
                                     <div className="w-1/2 h-full relative overflow-visible flex items-center justify-center">
                                         <div className="h-full w-[92%] flex flex-col items-center justify-center overflow-visible pt-[2%] pb-[2%]">
-                                            {activeMainTab === 'help' ? (
-                                                <div className="w-full max-w-md flex flex-col items-start justify-start pointer-events-auto px-[4%] self-center translate-x-[6%]">
+                                            {activeMainTab === 'help' && helpPhase === 'both' ? (
+                                                <div className="w-full max-w-md flex flex-col items-start justify-start pointer-events-auto px-[4%] self-center translate-x-[6%] animate-fade-in-soft">
                                                     <div className="rounded-sans text-amber-800 text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-wide">
                                                         OUR STORY
                                                     </div>

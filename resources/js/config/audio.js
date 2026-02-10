@@ -6,6 +6,12 @@
 const BASE = '/assets/audio';
 
 export const AUDIO = {
+    // Help screen (Mainplay book intro)
+    help: {
+        page1: `${BASE}/ins/helpvo1.m4a`,
+        page2: `${BASE}/ins/helpvo2.m4a`,
+    },
+
     // Welcome screen
     welcome: {
         leoIntro: `${BASE}/Leo/Hello There! I an Leo, welcome to Stellar Steps!….m4a`,
