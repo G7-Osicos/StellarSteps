@@ -5,6 +5,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import FullscreenToggle from '@/Components/FullscreenToggle';
+import MainplaySettingsMenu from '@/Components/MainplaySettingsMenu';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 import { AudioProvider } from '@/contexts/AudioContext';
 
@@ -24,8 +25,9 @@ createInertiaApp({
             <SettingsProvider>
                 <AudioProvider>
                     <App {...props} />
-                <div className="fixed top-4 left-4 z-[9999]">
+                <div className="fixed top-4 left-4 z-[9999] flex flex-col gap-2">
                     <FullscreenToggle />
+                    <MainplaySettingsMenu />
                 </div>
                 </AudioProvider>
             </SettingsProvider>
