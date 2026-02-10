@@ -97,8 +97,15 @@ export function AudioProvider({ children }) {
             }
             const resolvedSrc = src.includes(' ') ? encodeURI(src) : src;
             const audio = new Audio(resolvedSrc);
-            const mult = Number(volumeMultiplier);
-            audio.volume = Math.min(1, Math.max(0, fullGain * (Number.isFinite(mult) ? mult : 1)));
+
+            // Boost Leo's narration VOs slightly so they are clearer over BGM.
+            let mult = Number(volumeMultiplier);
+            if (!Number.isFinite(mult) || mult <= 0) mult = 1;
+            if (resolvedSrc.includes('/Leo/')) {
+                mult *= 1.35; // ~ +2.6 dB
+            }
+
+            audio.volume = Math.min(1, Math.max(0, fullGain * mult));
             audio.play().catch(() => {});
             voiceRef.current = audio;
             audio.onended = () => {
