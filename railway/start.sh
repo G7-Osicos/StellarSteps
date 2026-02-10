@@ -5,26 +5,37 @@ php artisan config:clear 2>/dev/null || true
 # Force MySQL for migrate so tables are created in Railway's DB (Railway uses MYSQLHOST, not DB_HOST)
 export DB_CONNECTION=mysql
 
-# Fail fast if MySQL vars are not set (Railway requires explicit variable references)
-if [ -z "${DB_HOST}" ] && [ -z "${MYSQLHOST}" ]; then
+# Fail fast if MySQL is not correctly configured for Railway
+DB_HOST_VAL="${DB_HOST:-${MYSQLHOST}}"
+if [ -z "${DB_HOST_VAL}" ] || [ "${DB_HOST_VAL}" = "127.0.0.1" ] || [ "${DB_HOST_VAL}" = "localhost" ]; then
     echo ""
-    echo "ERROR: MySQL not configured. DB_HOST and MYSQLHOST are both empty."
+    echo "ERROR: MySQL not configured for Railway."
+    echo "  DB_HOST=${DB_HOST_VAL:-'(not set)'}  <- must be Railway MySQL host (e.g. monorail.proxy.rlwy.net)"
     echo ""
-    echo "To fix:"
-    echo "  1. Add a MySQL database (Project Canvas -> + New -> Database -> MySQL)"
-    echo "  2. In your App service -> Variables, add:"
-    echo "       DB_HOST     = \${{MySQL.MYSQLHOST}}"
-    echo "       DB_PORT     = \${{MySQL.MYSQLPORT}}"
-    echo "       DB_DATABASE = \${{MySQL.MYSQLDATABASE}}"
-    echo "       DB_USERNAME = \${{MySQL.MYSQLUSER}}"
-    echo "       DB_PASSWORD = \${{MySQL.MYSQLPASSWORD}}"
-    echo "     (Replace 'MySQL' with your MySQL service name if different)"
+    echo "You have DB_HOST=127.0.0.1 or similar. On Railway, MySQL is a separate service."
     echo ""
-    echo "See docs/RAILWAY-MYSQL.md for details."
+    echo "To fix: In App service -> Variables, SET or REPLACE these with references:"
+    echo "  DB_HOST     = \${{MySQL.MYSQLHOST}}"
+    echo "  DB_PORT     = \${{MySQL.MYSQLPORT}}"
+    echo "  DB_DATABASE = \${{MySQL.MYSQLDATABASE}}"
+    echo "  DB_USERNAME = \${{MySQL.MYSQLUSER}}"
+    echo "  DB_PASSWORD = \${{MySQL.MYSQLPASSWORD}}"
+    echo ""
+    echo "  (Replace 'MySQL' with your MySQL service name. Remove any literal 127.0.0.1!)"
+    echo ""
+    echo "See docs/RAILWAY-MYSQL.md"
     exit 1
 fi
 
-echo "DB_HOST=${DB_HOST:-${MYSQLHOST:-'(not set)'}}"
+echo "DB_HOST=${DB_HOST_VAL}"
+
+# Laravel requires APP_KEY (set via: php artisan key:generate --show)
+if [ -z "${APP_KEY}" ]; then
+    echo ""
+    echo "ERROR: APP_KEY is not set. Run 'php artisan key:generate --show' locally and add APP_KEY to Railway Variables."
+    exit 1
+fi
+
 echo "Running migrations..."
 # Retry migrations (Railway MySQL may not be ready yet on cold start)
 for i in 1 2 3 4 5 6 7 8 9 10; do
@@ -47,8 +58,8 @@ echo "Starting Nginx + PHP-FPM..."
 PORT="${PORT:-${RAILWAY_TCP_PROXY_PORT:-8000}}"
 export PORT
 
-# Substitute PORT into nginx config
-envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/sites-enabled/default
+# Substitute PORT into nginx config (use conf.d - more reliably included than sites-enabled)
+envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/railway.conf
 
 # Start PHP-FPM in background, then Nginx in foreground
 php-fpm &

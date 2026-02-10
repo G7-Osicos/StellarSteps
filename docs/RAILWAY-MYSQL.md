@@ -11,7 +11,9 @@ The error `Connection refused (Host: 127.0.0.1, Port: 3306)` means your app is t
 
 ## 2. Link MySQL to Your App Service
 
-In your **App service** → **Variables**, add these **references**. Replace `MySQL` with your actual MySQL service name:
+**Important:** If you have `DB_HOST=127.0.0.1` (e.g. from .env.example), **remove or replace it**. On Railway, that points to localhost inside your container, where MySQL is not running.
+
+In your **App service** → **Variables**, add or update these **references**. Replace `MySQL` with your actual MySQL service name:
 
 | Variable      | Value                    |
 |---------------|--------------------------|

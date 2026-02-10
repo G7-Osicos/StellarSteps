@@ -26,7 +26,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache database public \
     && chmod -R 775 storage bootstrap/cache database \
     && chmod +x /var/www/railway/start.sh \
-    && mkdir -p /etc/nginx/sites-enabled
+    && mkdir -p /etc/nginx/conf.d
 
 COPY nginx.conf.template /etc/nginx/templates/
 
