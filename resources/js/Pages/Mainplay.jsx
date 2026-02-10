@@ -477,11 +477,9 @@ export default function Mainplay() {
                     {/* Book area – fills remaining space within layout */}
                     <div className="relative flex-1 min-h-0 w-full flex justify-center items-start -mt-36">
                         <div className="relative w-full h-full flex justify-center items-start">
-                            {/* Open book background */}
+                            {/* Open book background – full-res so it fills the center at full size */}
                             <img
                                 src="/assets/img/openbook.webp"
-                                srcSet="/assets/img/openbook-800w.webp 800w, /assets/img/openbook-1600w.webp 1600w"
-                                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 70vw, 900px"
                                 alt="Story book opened"
                                 fetchpriority="high"
                                 decoding="async"
