@@ -12,6 +12,9 @@ export function AudioProvider({ children }) {
     const ambientRef = useRef(null);
     const voiceRef = useRef(null);
     const sfxRef = useRef(null);
+    // Remember last multiplier used for voice so volume/mute changes
+    // can preserve relative loudness (e.g. Leo boost).
+    const voiceMultRef = useRef(1);
 
     const getGain = useCallback(() => {
         if (muted) return 0;
@@ -104,6 +107,7 @@ export function AudioProvider({ children }) {
             if (resolvedSrc.includes('/Leo/')) {
                 mult *= 1.35; // ~ +2.6 dB
             }
+            voiceMultRef.current = mult;
 
             audio.volume = Math.min(1, Math.max(0, fullGain * mult));
             audio.play().catch(() => {});
@@ -154,6 +158,12 @@ export function AudioProvider({ children }) {
             const gain = muted ? 0 : next / 100;
             if (bgmRef.current && Number.isFinite(gain)) bgmRef.current.volume = gain;
             if (ambientRef.current && Number.isFinite(gain)) ambientRef.current.volume = gain * 0.6;
+            if (voiceRef.current && Number.isFinite(gain)) {
+                voiceRef.current.volume = Math.min(1, Math.max(0, gain * (voiceMultRef.current || 1)));
+            }
+            if (sfxRef.current && Number.isFinite(gain)) {
+                sfxRef.current.volume = gain;
+            }
             updateSettings({ volume: next });
         },
         [muted, updateSettings]
@@ -164,6 +174,12 @@ export function AudioProvider({ children }) {
             const gain = m ? 0 : Math.min(1, Math.max(0, (Number(volume) || 80) / 100));
             if (bgmRef.current && Number.isFinite(gain)) bgmRef.current.volume = gain;
             if (ambientRef.current && Number.isFinite(gain)) ambientRef.current.volume = gain * 0.6;
+            if (voiceRef.current && Number.isFinite(gain)) {
+                voiceRef.current.volume = Math.min(1, Math.max(0, gain * (voiceMultRef.current || 1)));
+            }
+            if (sfxRef.current && Number.isFinite(gain)) {
+                sfxRef.current.volume = gain;
+            }
             updateSettings({ muted: m });
         },
         [volume, updateSettings]
@@ -173,6 +189,12 @@ export function AudioProvider({ children }) {
         const gain = getGain();
         if (bgmRef.current && Number.isFinite(gain)) bgmRef.current.volume = gain;
         if (ambientRef.current && Number.isFinite(gain)) ambientRef.current.volume = gain * 0.6;
+        if (voiceRef.current && Number.isFinite(gain)) {
+            voiceRef.current.volume = Math.min(1, Math.max(0, gain * (voiceMultRef.current || 1)));
+        }
+        if (sfxRef.current && Number.isFinite(gain)) {
+            sfxRef.current.volume = gain;
+        }
     }, [getGain]);
 
     return (

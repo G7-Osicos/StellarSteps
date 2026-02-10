@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { usePage } from '@inertiajs/react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAudio } from '@/contexts/AudioContext';
 
@@ -7,6 +8,17 @@ import { useAudio } from '@/contexts/AudioContext';
  * Screen Brightness, Volume, and Mute — so users can adjust settings from any page.
  */
 export default function MainplaySettingsMenu({ className = '' }) {
+    const page = usePage();
+    const currentUrl =
+        page?.url ?? (typeof window !== 'undefined' ? window.location.pathname : '');
+
+    // Hide burger menu on Welcome, Signup, and Mainplay map;
+    // show it on story pages (prologue, chapters, epilogue, etc.).
+    const HIDE_PATHS = ['/', '/signup', '/mainplay'];
+    if (HIDE_PATHS.includes(currentUrl)) {
+        return null;
+    }
+
     const [open, setOpen] = useState(false);
     const panelRef = useRef(null);
 
@@ -88,7 +100,7 @@ export default function MainplaySettingsMenu({ className = '' }) {
                             <button
                                 type="button"
                                 onClick={() => updateMuted(!muted)}
-                                className={`w-12 h-6 rounded-full transition-colors ${muted ? 'bg-amber-600' : 'bg-amber-200'}`}
+                                className={`w-12 h-6 rounded-full transition-colors ${muted ? 'bg-amber-200' : 'bg-amber-600'}`}
                                 aria-pressed={muted}
                             >
                                 <span className={`block w-5 h-5 rounded-full bg-white shadow transition-transform ${muted ? 'translate-x-0.5' : 'translate-x-7'}`} />
