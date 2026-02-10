@@ -4,6 +4,27 @@ set -e
 php artisan config:clear 2>/dev/null || true
 # Force MySQL for migrate so tables are created in Railway's DB (Railway uses MYSQLHOST, not DB_HOST)
 export DB_CONNECTION=mysql
+
+# Fail fast if MySQL vars are not set (Railway requires explicit variable references)
+if [ -z "${DB_HOST}" ] && [ -z "${MYSQLHOST}" ]; then
+    echo ""
+    echo "ERROR: MySQL not configured. DB_HOST and MYSQLHOST are both empty."
+    echo ""
+    echo "To fix:"
+    echo "  1. Add a MySQL database (Project Canvas -> + New -> Database -> MySQL)"
+    echo "  2. In your App service -> Variables, add:"
+    echo "       DB_HOST     = \${{MySQL.MYSQLHOST}}"
+    echo "       DB_PORT     = \${{MySQL.MYSQLPORT}}"
+    echo "       DB_DATABASE = \${{MySQL.MYSQLDATABASE}}"
+    echo "       DB_USERNAME = \${{MySQL.MYSQLUSER}}"
+    echo "       DB_PASSWORD = \${{MySQL.MYSQLPASSWORD}}"
+    echo "     (Replace 'MySQL' with your MySQL service name if different)"
+    echo ""
+    echo "See docs/RAILWAY-MYSQL.md for details."
+    exit 1
+fi
+
+echo "DB_HOST=${DB_HOST:-${MYSQLHOST:-'(not set)'}}"
 echo "Running migrations..."
 # Retry migrations (Railway MySQL may not be ready yet on cold start)
 for i in 1 2 3 4 5 6 7 8 9 10; do
