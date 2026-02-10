@@ -396,7 +396,7 @@ export default function Mainplay() {
                                     { title: 'Kindness and Empathy', desc: 'Be brave and help the Blue Wolf pull out a painful thorn to make a new friend.', isGold: goldStarCount >= 2 },
                                     { title: 'Politeness and Respect', desc: "The giant Stone Guardian is fast asleep and won't open for just anyone! Use the magic words 'Please' and 'Thank You' to wake him up and unlock the path home.", isGold: goldStarCount >= 3 },
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center gap-4 sm:gap-5 p-4 sm:p-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-amber-200/40">
+                                    <div key={i} className="flex items-center gap-4 sm:gap-5 p-4 sm:p-5 rounded-2xl bg-white border border-amber-300 shadow-lg">
                                         <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center">
                                             {item.isGold ? (
                                                 <img src="/assets/img/Star.webp" alt="" className="w-full h-full object-contain [filter:drop-shadow(0_0_2px_#fef08a)_drop-shadow(0_0_8px_#facc15)_drop-shadow(0_0_16px_#eab308)]" aria-hidden />
@@ -405,8 +405,8 @@ export default function Mainplay() {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="cartoon-thin text-amber-900 text-lg sm:text-xl font-bold leading-tight mb-1">{item.title}</div>
-                                            <div className="cartoon-thin text-gray-700 text-sm sm:text-base leading-relaxed">{item.desc}</div>
+                                            <div className="cartoon-thin text-black text-xl sm:text-2xl font-bold leading-tight mb-1">{item.title}</div>
+                                            <div className="cartoon-thin text-black text-base sm:text-lg font-bold leading-relaxed">{item.desc}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -710,41 +710,148 @@ export default function Mainplay() {
                             {/* Content overlay - book pages only; z-25 so profile extension sits above woods/castle/gate/prologue (z-20); nav stays z-30; pointer-events-none so hover reaches illustrations below */}
                             <div className="absolute inset-y-[10%] inset-x-[10%] flex flex-col pointer-events-none z-[25]">
                                 <div className="flex flex-1 min-h-0 w-full">
+                                    {/* Left page */}
                                     <div className="w-1/2 h-full relative flex items-center justify-center px-[5%] -ml-4 md:-ml-6">
-                                        <div className="flex flex-col gap-8 md:gap-10 items-center justify-center w-full max-w-full">
-                                            {/* Left page content placeholder */}
-                                        </div>
-                                    </div>
-                                    <div className="w-1/2 h-full relative overflow-visible flex items-center justify-center">
-                                        <div className="h-full w-[92%] flex flex-col items-center justify-start overflow-visible pt-[2%] pb-[2%]">
-                                            {/* Profile extension – wooden plaque (only when Profile tab is clicked; bounce-out on close) */}
-                                            {(showProfileExtension || profileClosing) && (
-                                            <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[2%] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
-                                                <div className="relative w-full flex flex-col items-center p-16 sm:p-20 min-h-[16rem] sm:min-h-[20rem]">
+                                        {activeMainTab === 'help' ? (
+                                            <div className="flex flex-col gap-6 md:gap-8 items-start justify-center w-full max-w-md pointer-events-auto">
+                                                <div className="flex flex-col items-start gap-2">
+                                                    <div className="text-amber-800 text-lg sm:text-xl font-bold tracking-wide">
+                                                        Welcome to
+                                                    </div>
                                                     <img
-                                                        src="/assets/img/tabframe.webp"
-                                                        alt=""
+                                                        src="/assets/img/title.webp"
+                                                        alt="Stellar Steps"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none select-none opacity-100 transition-all duration-200 group-hover:brightness-105 group-hover:drop-shadow-lg"
-                                                        aria-hidden
+                                                        className="w-[220px] sm:w-[260px] drop-shadow-md"
                                                     />
-                                                    <div className="relative z-10 flex flex-col items-center gap-2 text-center w-full px-4 py-6">
-                                                        <span className="cartoon-thin text-white text-2xl sm:text-3xl md:text-4xl font-bold whitespace-nowrap flex flex-col items-center leading-tight animate-glow-blink group-hover:animate-none group-hover:opacity-100 [filter:drop-shadow(0_0_4px_#fef08a)_drop-shadow(0_0_12px_#facc15)_drop-shadow(0_0_24px_#eab308)]">
-                                                            {user?.name ?? 'Guest'}
-                                                        </span>
-                                                        {user?.role === 'hero' && user?.hero_code ? (
-                                                            <span className="cartoon-thin text-white text-lg sm:text-xl md:text-2xl font-bold whitespace-nowrap flex flex-col items-center leading-tight animate-glow-blink group-hover:animate-none group-hover:opacity-100 [filter:drop-shadow(0_0_4px_#fef08a)_drop-shadow(0_0_12px_#facc15)_drop-shadow(0_0_24px_#eab308)]">
-                                                                Hero Code: {user.hero_code}
-                                                            </span>
-                                                        ) : user?.role === 'guardian' ? (
-                                                            <span className="cartoon-thin text-white text-lg sm:text-xl md:text-2xl font-bold whitespace-nowrap flex flex-col items-center leading-tight animate-glow-blink group-hover:animate-none group-hover:opacity-100 [filter:drop-shadow(0_0_4px_#fef08a)_drop-shadow(0_0_12px_#facc15)_drop-shadow(0_0_24px_#eab308)]">
-                                                                {user?.linked_hero_name ? `Guardian of ${user.linked_hero_name}` : 'Guardian'}
-                                                            </span>
-                                                        ) : null}
+                                                </div>
+                                                {/* Leo intro */}
+                                                <div className="flex items-center gap-4 sm:gap-5">
+                                                    <img
+                                                        src="/assets/img/Leo0.webp"
+                                                        alt="Leo"
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        className="w-28 sm:w-32 md:w-36 h-auto object-contain pointer-events-none"
+                                                    />
+                                                    <div className="flex flex-col text-left">
+                                                        <div className="text-amber-800 text-xl sm:text-2xl font-bold">
+                                                            This is Leo
+                                                        </div>
+                                                        <div className="text-black text-base sm:text-lg font-bold leading-relaxed">
+                                                            He is in Grade 1.
+                                                            <br />
+                                                            He loves adventures.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/* Marky intro */}
+                                                <div className="flex items-center gap-4 sm:gap-5">
+                                                    <img
+                                                        src="/assets/img/Marky1.webp"
+                                                        alt="Marky"
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        className="w-24 sm:w-28 md:w-32 h-auto object-contain pointer-events-none"
+                                                    />
+                                                    <div className="flex flex-col text-left">
+                                                        <div className="text-amber-800 text-xl sm:text-2xl font-bold">
+                                                            This is Marky
+                                                        </div>
+                                                        <div className="text-black text-base sm:text-lg font-bold leading-relaxed">
+                                                            He guides Leo and
+                                                            <br />
+                                                            helps explain things.
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        ) : (
+                                            <div className="flex flex-col gap-8 md:gap-10 items-center justify-center w-full max-w-full">
+                                                {/* Left page content placeholder */}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Right page */}
+                                    <div className="w-1/2 h-full relative overflow-visible flex items-center justify-center">
+                                        <div className="h-full w-[92%] flex flex-col items-center justify-start overflow-visible pt-[2%] pb-[2%]">
+                                            {activeMainTab === 'help' ? (
+                                                <div className="w-full h-full flex flex-col items-start justify-start pointer-events-auto px-[4%]">
+                                                    <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                                                        OUR STORY
+                                                    </div>
+                                                    <div className="space-y-2 text-amber-900 text-base sm:text-lg font-bold leading-relaxed max-w-md">
+                                                        <p>Inside the book,</p>
+                                                        <p>Some places are broken.</p>
+                                                        <p>Some places are messy.</p>
+                                                        <p>Some friends need help.</p>
+                                                        <p>Leo and Marky go on an adventure.</p>
+                                                        <p>They fix the story together.</p>
+                                                        <p className="mt-4 text-amber-800">
+                                                            But they need YOU!
+                                                        </p>
+                                                        <p className="mt-2">
+                                                            Every good choice earns a star.
+                                                        </p>
+                                                        <p>Stars help fix the story!</p>
+                                                        <p className="mt-4">You help by:</p>
+                                                    </div>
+                                                    <div className="mt-6 flex items-center gap-6 sm:gap-10">
+                                                        {[
+                                                            { label: 'cleaning up' },
+                                                            { label: 'being kind' },
+                                                            { label: 'using polite words' },
+                                                        ].map((item) => (
+                                                            <div key={item.label} className="flex flex-col items-center gap-2">
+                                                                <img
+                                                                    src="/assets/img/Star.webp"
+                                                                    alt=""
+                                                                    loading="lazy"
+                                                                    decoding="async"
+                                                                    className="w-10 h-10 sm:w-12 sm:h-12 object-contain [filter:drop-shadow(0_0_2px_#fef08a)_drop-shadow(0_0_8px_#facc15)_drop-shadow(0_0_16px_#eab308)]"
+                                                                    aria-hidden
+                                                                />
+                                                                <div className="text-amber-900 text-xs sm:text-sm font-bold text-center whitespace-nowrap">
+                                                                    {item.label}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    {/* Profile extension – wooden plaque (only when Profile tab is clicked; bounce-out on close) */}
+                                                    {(showProfileExtension || profileClosing) && (
+                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[2%] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
+                                                        <div className="relative w-full flex flex-col items-center p-16 sm:p-20 min-h-[16rem] sm:min-h-[20rem]">
+                                                            <img
+                                                                src="/assets/img/tabframe.webp"
+                                                                alt=""
+                                                                loading="lazy"
+                                                                decoding="async"
+                                                                className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none select-none opacity-100 transition-all duration-200 group-hover:brightness-105 group-hover:drop-shadow-lg"
+                                                                aria-hidden
+                                                            />
+                                                            <div className="relative z-10 flex flex-col items-center gap-2 text-center w-full px-4 py-6">
+                                                                <span className="cartoon-thin text-white text-2xl sm:text-3xl md:text-4xl font-bold whitespace-nowrap flex flex-col items-center leading-tight animate-glow-blink group-hover:animate-none group-hover:opacity-100 [filter:drop-shadow(0_0_4px_#fef08a)_drop-shadow(0_0_12px_#facc15)_drop-shadow(0_0_24px_#eab308)]">
+                                                                    {user?.name ?? 'Guest'}
+                                                                </span>
+                                                                {user?.role === 'hero' && user?.hero_code ? (
+                                                                    <span className="cartoon-thin text-white text-lg sm:text-xl md:text-2xl font-bold whitespace-nowrap flex flex-col items-center leading-tight animate-glow-blink group-hover:animate-none group-hover:opacity-100 [filter:drop-shadow(0_0_4px_#fef08a)_drop-shadow(0_0_12px_#facc15)_drop-shadow(0_0_24px_#eab308)]">
+                                                                        Hero Code: {user.hero_code}
+                                                                    </span>
+                                                                ) : user?.role === 'guardian' ? (
+                                                                    <span className="cartoon-thin text-white text-lg sm:text-xl md:text-2xl font-bold whitespace-nowrap flex flex-col items-center leading-tight animate-glow-blink group-hover:animate-none group-hover:opacity-100 [filter:drop-shadow(0_0_4px_#fef08a)_drop-shadow(0_0_12px_#facc15)_drop-shadow(0_0_24px_#eab308)]">
+                                                                        {user?.linked_hero_name ? `Guardian of ${user.linked_hero_name}` : 'Guardian'}
+                                                                    </span>
+                                                                ) : null}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </div>
