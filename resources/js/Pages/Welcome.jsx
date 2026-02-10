@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
@@ -18,6 +18,8 @@ export default function Welcome() {
     const [phase, setPhase] = useState(PHASE_BOOK);
     const [leoInPosition, setLeoInPosition] = useState(false);
     const { playVoice, stopVoice } = useAudio() ?? {};
+    const [voiceReady, setVoiceReady] = useState(false);
+    const voiceStartedRef = useRef(false);
 
     useEffect(() => {
         const t1 = setTimeout(() => setPhase(PHASE_LEO), DELAY_BEFORE_LEO_MS);
@@ -31,10 +33,28 @@ export default function Welcome() {
         };
     }, []);
 
+    // Unlock narration playback after the first user interaction
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const unlock = () => {
+            setVoiceReady(true);
+            window.removeEventListener('pointerdown', unlock);
+        };
+        window.addEventListener('pointerdown', unlock);
+        return () => window.removeEventListener('pointerdown', unlock);
+    }, []);
+
     // Play Leo's welcome line when narration bubble appears,
     // and only hide Leo + bubble after the voice line finishes.
     useEffect(() => {
-        if (phase === PHASE_NARRATION && AUDIO.welcome?.leoIntro && playVoice) {
+        if (
+            phase === PHASE_NARRATION &&
+            voiceReady &&
+            !voiceStartedRef.current &&
+            AUDIO.welcome?.leoIntro &&
+            playVoice
+        ) {
+            voiceStartedRef.current = true;
             playVoice(AUDIO.welcome.leoIntro, 1, () => {
                 setPhase(PHASE_GONE);
             });
@@ -42,10 +62,15 @@ export default function Welcome() {
         if (phase === PHASE_GONE && stopVoice) {
             stopVoice();
         }
-        return () => {
+    }, [phase, voiceReady, playVoice, stopVoice]);
+
+    // Ensure voice stops when this page unmounts
+    useEffect(
+        () => () => {
             stopVoice?.();
-        };
-    }, [phase, playVoice, stopVoice, setPhase]);
+        },
+        [stopVoice]
+    );
 
     // Trigger Leo slide-in after phase becomes LEO so CSS transition runs
     useEffect(() => {

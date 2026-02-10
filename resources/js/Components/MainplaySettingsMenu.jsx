@@ -12,7 +12,8 @@ export default function MainplaySettingsMenu({ className = '' }) {
 
     // Hide burger menu on Welcome, Signup, and Mainplay map;
     // show it on story pages (prologue, chapters, epilogue, etc.).
-    const HIDE_PATHS = ['/', '/signup', '/mainplay'];
+    // Hide on Welcome, auth, and Mainplay map; show only on story pages
+    const HIDE_PATHS = ['/', '/mainplay', '/signup', '/login'];
     if (HIDE_PATHS.includes(currentUrl)) {
         return null;
     }
