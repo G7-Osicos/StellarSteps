@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
+import { useAudio } from '@/contexts/AudioContext';
+import { AUDIO } from '@/config/audio';
 
 /** Sequence: 'book' → 'leo' (slide in) → 'narration' (show) → 'gone' (both disappear) */
 const PHASE_BOOK = 'book';
@@ -16,6 +18,7 @@ export default function Welcome() {
     const [titleLoaded, setTitleLoaded] = useState(false);
     const [phase, setPhase] = useState(PHASE_BOOK);
     const [leoInPosition, setLeoInPosition] = useState(false);
+    const { playVoice, stopVoice } = useAudio() ?? {};
 
     useEffect(() => {
         const t1 = setTimeout(() => setPhase(PHASE_LEO), DELAY_BEFORE_LEO_MS);
@@ -33,6 +36,19 @@ export default function Welcome() {
             clearTimeout(t3);
         };
     }, []);
+
+    // Play Leo's welcome line when narration bubble appears
+    useEffect(() => {
+        if (phase === PHASE_NARRATION && AUDIO.welcome?.leoIntro && playVoice) {
+            playVoice(AUDIO.welcome.leoIntro);
+        }
+        if (phase === PHASE_GONE && stopVoice) {
+            stopVoice();
+        }
+        return () => {
+            stopVoice?.();
+        };
+    }, [phase, playVoice, stopVoice]);
 
     // Trigger Leo slide-in after phase becomes LEO so CSS transition runs
     useEffect(() => {

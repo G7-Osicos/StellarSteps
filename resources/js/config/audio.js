@@ -6,6 +6,11 @@
 const BASE = '/assets/audio';
 
 export const AUDIO = {
+    // Welcome screen
+    welcome: {
+        leoIntro: `${BASE}/Leo/Hello There! I an Leo, welcome to Stellar Steps!….m4a`,
+    },
+
     // Prologue
     prologueEnd: {
         voice: [

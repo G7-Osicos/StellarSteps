@@ -713,9 +713,9 @@ export default function Mainplay() {
                                     {/* Left page */}
                                     <div className="w-1/2 h-full relative flex items-center justify-center px-[5%] -ml-4 md:-ml-6">
                                         {activeMainTab === 'help' ? (
-                                            <div className="flex flex-col gap-6 md:gap-8 items-start justify-center w-full max-w-md pointer-events-auto">
+                                            <div className="flex flex-col gap-7 md:gap-9 items-start justify-center w-full max-w-md pointer-events-auto">
                                                 <div className="flex flex-col items-start gap-2">
-                                                    <div className="text-amber-800 text-lg sm:text-xl font-bold tracking-wide">
+                                                    <div className="text-amber-800 text-xl sm:text-2xl font-extrabold tracking-wide">
                                                         Welcome to
                                                     </div>
                                                     <img
@@ -733,13 +733,13 @@ export default function Mainplay() {
                                                         alt="Leo"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="w-28 sm:w-32 md:w-36 h-auto object-contain pointer-events-none"
+                                                        className="w-32 sm:w-36 md:w-40 h-auto object-contain pointer-events-none"
                                                     />
                                                     <div className="flex flex-col text-left">
-                                                        <div className="text-amber-800 text-xl sm:text-2xl font-bold">
+                                                        <div className="text-amber-800 text-2xl sm:text-3xl font-extrabold">
                                                             This is Leo
                                                         </div>
-                                                        <div className="text-black text-base sm:text-lg font-bold leading-relaxed">
+                                                        <div className="text-black text-lg sm:text-xl font-bold leading-relaxed">
                                                             He is in Grade 1.
                                                             <br />
                                                             He loves adventures.
@@ -753,13 +753,13 @@ export default function Mainplay() {
                                                         alt="Marky"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="w-24 sm:w-28 md:w-32 h-auto object-contain pointer-events-none"
+                                                        className="w-28 sm:w-32 md:w-36 h-auto object-contain pointer-events-none"
                                                     />
                                                     <div className="flex flex-col text-left">
-                                                        <div className="text-amber-800 text-xl sm:text-2xl font-bold">
+                                                        <div className="text-amber-800 text-2xl sm:text-3xl font-extrabold">
                                                             This is Marky
                                                         </div>
-                                                        <div className="text-black text-base sm:text-lg font-bold leading-relaxed">
+                                                        <div className="text-black text-lg sm:text-xl font-bold leading-relaxed">
                                                             He guides Leo and
                                                             <br />
                                                             helps explain things.
@@ -782,7 +782,7 @@ export default function Mainplay() {
                                                     <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
                                                         OUR STORY
                                                     </div>
-                                                    <div className="space-y-2 text-amber-900 text-base sm:text-lg font-bold leading-relaxed max-w-md">
+                                                    <div className="space-y-2 text-amber-900 text-base sm:text-lg font-bold leading-relaxed max-w-md text-justify">
                                                         <p>Inside the book,</p>
                                                         <p>Some places are broken.</p>
                                                         <p>Some places are messy.</p>
@@ -818,6 +818,15 @@ export default function Mainplay() {
                                                                 </div>
                                                             </div>
                                                         ))}
+                                                    </div>
+                                                    <div className="mt-6">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setActiveMainTab('map')}
+                                                            className="inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-3.5 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-sm sm:text-base md:text-lg font-bold shadow-md border-2 border-amber-700 tracking-wide"
+                                                        >
+                                                            Let&apos;s begin the adventure!
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ) : (
