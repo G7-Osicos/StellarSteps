@@ -52,17 +52,10 @@ for i in 1 2 3 4 5 6 7 8 9 10; do
     echo "MySQL not ready, retrying in 3s ($i/10)..."
     sleep 3
 done
-echo "Starting Nginx + PHP-FPM..."
+echo "Starting server..."
 
 # Railway injects PORT (e.g. 8080). Fallback for local runs.
 PORT="${PORT:-${RAILWAY_TCP_PROXY_PORT:-8000}}"
 export PORT
-
-# Substitute PORT into nginx config (use conf.d - more reliably included than sites-enabled)
-envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/railway.conf
-
-# Start PHP-FPM in background, wait for it to be ready, then Nginx in foreground
-php-fpm &
-sleep 2
 echo "Listening on 0.0.0.0:$PORT"
-exec nginx -g "daemon off;"
+exec php artisan serve --host=0.0.0.0 --port="$PORT"

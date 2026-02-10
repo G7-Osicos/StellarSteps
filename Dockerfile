@@ -8,10 +8,10 @@ COPY public/ public/
 COPY jsconfig.json postcss.config.js tailwind.config.js vite.config.js ./
 RUN npm run build
 
-# Laravel app with Nginx + PHP-FPM for proper cache headers on static assets
-FROM php:8.2-fpm
+# Laravel app
+FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
-    nginx git unzip libzip-dev libpng-dev libonig-dev libicu-dev gettext-base \
+    git unzip libzip-dev libpng-dev libonig-dev libicu-dev \
     && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath intl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -25,11 +25,7 @@ COPY --from=frontend /app/public/build ./public/build
 RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache database public \
     && chmod -R 775 storage bootstrap/cache database \
-    && chmod +x /var/www/railway/start.sh \
-    && mkdir -p /etc/nginx/conf.d
-
-COPY nginx.conf.template /etc/nginx/templates/
-COPY docker/php-fpm-railway.conf /usr/local/etc/php-fpm.d/zz-railway.conf
+    && chmod +x /var/www/railway/start.sh
 
 EXPOSE 8000
 # Railway sets PORT at runtime
