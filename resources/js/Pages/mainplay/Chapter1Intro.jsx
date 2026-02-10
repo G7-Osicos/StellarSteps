@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useEffect, useState } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
@@ -12,8 +12,16 @@ const CHAPTER1_BGM = '/assets/audio/bgm/BGM - Frame 1-9.wav';
 // 2) Black screen with falling Leo → navigate to kingdom1 right away after fall
 
 export default function Chapter1Intro() {
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
     const { playSFX, playBGM } = useAudio() ?? {};
     const [phase, setPhase] = useState('title'); // 'title' | 'leo'
+
+    // Track when the hero starts Chapter 1 (latest run wins).
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.start'), { chapter: 1 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
 
     useEffect(() => {
         if (CHAPTER1_BGM && playBGM) playBGM(CHAPTER1_BGM, true);

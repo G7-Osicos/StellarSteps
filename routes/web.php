@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChapterProgressController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StellarAuthController;
 use Illuminate\Foundation\Application;
@@ -25,6 +26,12 @@ Route::post('/login/stellar', [StellarAuthController::class, 'login'])->name('lo
 
 Route::get('/mainplay', [App\Http\Controllers\MainplayController::class, 'index'])->name('mainplay');
 Route::post('/mainplay/progress', [App\Http\Controllers\MainplayController::class, 'saveProgress'])->name('mainplay.save-progress')->middleware('auth');
+
+// Track per-chapter start and finish times for heroes.
+Route::middleware('auth')->group(function () {
+    Route::post('/api/chapter-progress/start', [ChapterProgressController::class, 'start'])->name('chapter-progress.start');
+    Route::post('/api/chapter-progress/finish', [ChapterProgressController::class, 'finish'])->name('chapter-progress.finish');
+});
 
 Route::get('/mainplay/prologue-intro', function () {
     return Inertia::render('mainplay/PrologueIntro');

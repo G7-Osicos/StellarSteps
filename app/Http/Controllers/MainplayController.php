@@ -23,6 +23,8 @@ class MainplayController extends Controller
         $stages = self::DEFAULT_STAGES;
         $goldStars = 0;
 
+        $chapterTimes = [];
+
         if ($user) {
             // For guardians, show the linked hero's progress so they can monitor it.
             $progressOwner = $user;
@@ -39,6 +41,7 @@ class MainplayController extends Controller
             // Load progress from the owner (hero for heroes; linked hero for guardians)
             $stages = $progressOwner->stages_completed ?? self::DEFAULT_STAGES;
             $goldStars = (int) ($progressOwner->gold_stars ?? 0);
+            $chapterTimes = $progressOwner->chapter_times ?? [];
 
             // Ensure stages is array of 5 booleans
             if (! is_array($stages) || count($stages) !== 5) {
@@ -120,6 +123,7 @@ class MainplayController extends Controller
                 'clearedStages' => $stages,
                 'goldStars' => $goldStars,
             ],
+            'chapterTimes' => $chapterTimes,
         ]);
     }
 

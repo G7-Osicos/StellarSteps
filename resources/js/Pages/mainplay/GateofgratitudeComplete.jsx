@@ -1,13 +1,21 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useState, useEffect } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
 
 export default function GateofgratitudeComplete() {
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
     const { playSFX, stopBGM } = useAudio() ?? {};
     // 0: all grey, 1: first yellow, 2: first rotate, 3: second yellow, 4: second rotate, 5: third yellow, 6: third rotate, 7: text, 8: button
     const [phase, setPhase] = useState(0);
+
+    // Track when the hero finishes Chapter 3.
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.finish'), { chapter: 3 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
 
     useEffect(() => {
         stopBGM?.();

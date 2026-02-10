@@ -1,13 +1,21 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useState, useEffect } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
 
 export default function KingdomCompleteStar() {
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
     const { playSFX } = useAudio() ?? {};
     // 0: all grey, 1: first turning yellow (fade-in), 2: rotating, 3: text only, 4: button only
     const [phase, setPhase] = useState(0);
+
+    // Track when the hero finishes Chapter 1.
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.finish'), { chapter: 1 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
 
     useEffect(() => {
         if (phase === 2) playSFX?.(AUDIO.sfx.starClick);

@@ -114,7 +114,7 @@ const STAGE_ILLUSTRATIONS = [
 
 export default function Mainplay() {
     const page = usePage();
-    const { auth, initialProgress } = page.props || {};
+    const { auth, initialProgress, chapterTimes } = page.props || {};
     const user = auth?.user ?? null;
     const [scale, setScale] = useState(getLayoutScale);
     const [showProfileExtension, setShowProfileExtension] = useState(false);
@@ -125,6 +125,7 @@ export default function Mainplay() {
     const [settingsBoardClosing, setSettingsBoardClosing] = useState(false);
     const [showProgressBoard, setShowProgressBoard] = useState(false);
     const [progressBoardClosing, setProgressBoardClosing] = useState(false);
+    const [chapterInfo, setChapterInfo] = useState(null);
     // Main book content mode: 'map' = stage images/buttons, 'help' = empty book (for Help tab)
     const [activeMainTab, setActiveMainTab] = useState('map');
     // Help tab phases: 'hidden' = nothing, 'left' = left page only, 'both' = left + right
@@ -187,6 +188,18 @@ export default function Mainplay() {
             next[stageIndex] = true;
             return next;
         });
+    }
+
+    function openChapterTiming(chapterNumber) {
+        if (!user || user.role !== 'guardian') return;
+        const map = {
+            1: { key: 'chapter1', label: 'Chapter 1 – Orderliness & Cleanliness' },
+            2: { key: 'chapter2', label: 'Chapter 2 – Kindness & Empathy' },
+            3: { key: 'chapter3', label: 'Chapter 3 – Politeness & Gratitude' },
+        };
+        const info = map[chapterNumber];
+        if (!info) return;
+        setChapterInfo(info);
     }
 
     function startHelpFlow() {
@@ -446,6 +459,94 @@ export default function Mainplay() {
                     </div>
                 </div>
             )}
+            {/* Guardian chapter timing popup – appears when guardian clicks a map illustration */}
+            {user?.role === 'guardian' && chapterTimes && chapterInfo && (
+                <div
+                    className="fixed inset-0 z-[65] flex items-center justify-center p-4"
+                    aria-modal="true"
+                    role="dialog"
+                    aria-label="Chapter timing"
+                >
+                    <button
+                        type="button"
+                        onClick={() => setChapterInfo(null)}
+                        className="absolute inset-0 bg-black/50 cursor-pointer"
+                        aria-label="Close chapter timing"
+                    />
+                    <div className="relative z-10 max-w-4xl w-full animate-bounce-in">
+                        <img
+                            src="/assets/img/settingboard.webp"
+                            alt="Chapter timing"
+                            loading="eager"
+                            decoding="async"
+                            className="w-full h-auto object-contain drop-shadow-2xl pointer-events-none select-none"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setChapterInfo(null)}
+                            className="absolute top-8 right-8 sm:top-10 sm:right-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-amber-700 bg-amber-100/90 flex items-center justify-center hover:bg-amber-200/90 transition-colors cursor-pointer"
+                            aria-label="Close chapter timing"
+                        >
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-amber-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        {(() => {
+                            const key = chapterInfo.key;
+                            const data = chapterTimes?.[key] || {};
+                            const startedAt = data?.started_at ? new Date(data.started_at) : null;
+                            const finishedAt = data?.finished_at ? new Date(data.finished_at) : null;
+                            const format = (d) =>
+                                d
+                                    ? d.toLocaleString(undefined, {
+                                          year: 'numeric',
+                                          month: 'short',
+                                          day: 'numeric',
+                                          hour: 'numeric',
+                                          minute: '2-digit',
+                                      })
+                                    : 'Not recorded yet';
+                            let durationText = 'Not available yet';
+                            if (startedAt && finishedAt && finishedAt > startedAt) {
+                                const ms = finishedAt.getTime() - startedAt.getTime();
+                                const totalSeconds = Math.round(ms / 1000);
+                                const minutes = Math.floor(totalSeconds / 60);
+                                const seconds = totalSeconds % 60;
+                                durationText =
+                                    minutes > 0
+                                        ? `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
+                                        : `${seconds} second${seconds !== 1 ? 's' : ''}`;
+                            }
+                            return (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 sm:gap-6 pt-[16%] pb-[18%] px-[12%] pointer-events-none">
+                                    <div className="pointer-events-auto w-full max-w-2xl flex flex-col items-stretch gap-3 sm:gap-4">
+                                        <div className="cartoon-thin text-amber-900 text-2xl sm:text-3xl md:text-4xl font-extrabold text-center mb-2">
+                                            {chapterInfo.label}
+                                        </div>
+                                        <div className="rounded-2xl bg-white/95 border border-amber-300 shadow-lg p-4 sm:p-5 flex flex-col gap-2">
+                                            <div className="cartoon-thin text-gray-900 text-lg sm:text-xl font-bold">
+                                                Started:
+                                                <span className="ml-2 font-normal">{format(startedAt)}</span>
+                                            </div>
+                                            <div className="cartoon-thin text-gray-900 text-lg sm:text-xl font-bold">
+                                                Finished:
+                                                <span className="ml-2 font-normal">{format(finishedAt)}</span>
+                                            </div>
+                                            <div className="cartoon-thin text-gray-900 text-lg sm:text-xl font-bold">
+                                                Total time:
+                                                <span className="ml-2 font-normal">{durationText}</span>
+                                            </div>
+                                        </div>
+                                        <p className="cartoon-thin text-gray-800 text-sm sm:text-base text-center">
+                                            These times are based on the most recent run of this chapter by your hero.
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+                    </div>
+                </div>
+            )}
             <div className="relative w-full h-screen overflow-hidden">
                 <img
                     src="/assets/img/LP_BG.webp"
@@ -630,6 +731,7 @@ export default function Mainplay() {
                                             minWidth: 260,
                                             minHeight: 220,
                                         }}
+                                        onClick={user?.role === 'guardian' ? () => openChapterTiming(1) : undefined}
                                     >
                                         <img
                                             src={clearedStages[1] ? STAGE_ILLUSTRATIONS[1].C : STAGE_ILLUSTRATIONS[1].B}
@@ -663,6 +765,7 @@ export default function Mainplay() {
                                             minWidth: 260,
                                             minHeight: 220,
                                         }}
+                                        onClick={user?.role === 'guardian' ? () => openChapterTiming(3) : undefined}
                                     >
                                         <img
                                             src={clearedStages[3] ? STAGE_ILLUSTRATIONS[3].C : STAGE_ILLUSTRATIONS[3].B}
@@ -696,6 +799,7 @@ export default function Mainplay() {
                                             minWidth: 260,
                                             minHeight: 220,
                                         }}
+                                        onClick={user?.role === 'guardian' ? () => openChapterTiming(2) : undefined}
                                     >
                                         <img
                                             src={clearedStages[2] ? STAGE_ILLUSTRATIONS[2].C : STAGE_ILLUSTRATIONS[2].B}
@@ -878,7 +982,7 @@ export default function Mainplay() {
                                                 <>
                                                     {/* Profile extension – wooden plaque (only when Profile tab is clicked; bounce-out on close) */}
                                                     {(showProfileExtension || profileClosing) && (
-                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[2%] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
+                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[12rem] sm:-mt-[14rem] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
                                                         <div className="relative w-full flex flex-col items-center p-16 sm:p-20 min-h-[16rem] sm:min-h-[20rem]">
                                                             <img
                                                                 src="/assets/img/tabframe.webp"

@@ -1,13 +1,21 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useState, useEffect } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
 
 export default function WhisperingwoodsComplete() {
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
     const { playSFX } = useAudio() ?? {};
     // 0: all grey, 1: first yellow, 2: first rotate, 3: second yellow, 4: second rotate, 5: text, 6: button
     const [phase, setPhase] = useState(0);
+
+    // Track when the hero finishes Chapter 2.
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.finish'), { chapter: 2 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
 
     useEffect(() => {
         if ([2, 4].includes(phase)) playSFX?.(AUDIO.sfx.starClick);

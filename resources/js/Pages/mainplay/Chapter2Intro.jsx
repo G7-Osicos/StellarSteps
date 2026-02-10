@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useEffect, useState } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
@@ -13,6 +13,14 @@ const WOOD_BG = '/assets/img/LP_BG.webp';
 export default function Chapter2Intro() {
     const [phase, setPhase] = useState('title'); // 'title' | 'leo'
     const { playBGM } = useAudio() ?? {};
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
+
+    // Track when the hero starts Chapter 2 (latest run wins).
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.start'), { chapter: 2 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
 
     // On reload of Chapter2Intro, start Chapter 2 BGM and let it continue through the woods
     useEffect(() => {

@@ -27,6 +27,7 @@ class User extends Authenticatable
         'linked_hero_code',
         'stages_completed',
         'gold_stars',
+        'chapter_times',
     ];
 
     /**
@@ -67,6 +68,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'stages_completed' => 'array',
+            'chapter_times' => 'array',
         ];
     }
 }
