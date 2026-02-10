@@ -99,7 +99,7 @@ function getLayoutScale() {
 const PROFILE_BOUNCE_OUT_MS = 250;
 const WOODEN_SIGN_SLIDE_DOWN_MS = 400;
 
-/** Stage system: 0 = locked, 1 = play, 2 = replay */
+/** Stage system: 0 = locked, 1 = play, 2 = replay, 3 = continue (reuse play icon) */
 const BUTTON_IMGS = ['/assets/img/locked.webp', '/assets/img/play.webp', '/assets/img/replay.webp'];
 /** Stage 1 full-screen background (attic) when Play is clicked */
 const STAGE_1_FULLSCREEN_BG = '/assets/img/Attic Background -20260201T170631Z-3-001/Attic Background/attic1.webp';
@@ -148,31 +148,57 @@ export default function Mainplay() {
     });
     const goldStarCount = initialProgress?.goldStars ?? 0;
 
-    /** Button state for stage index (0–4): 0 Locked, 1 Play, 2 Replay. Stage 1 is always Play or Replay. */
+    /** Chapter in progress = started but not finished (from chapter_times). Lets map show "Continue" when hero returns mid-chapter. */
+    const chapterInProgress = {
+        1: !!(chapterTimes?.chapter1?.started_at && !chapterTimes?.chapter1?.finished_at),
+        2: !!(chapterTimes?.chapter2?.started_at && !chapterTimes?.chapter2?.finished_at),
+        3: !!(chapterTimes?.chapter3?.started_at && !chapterTimes?.chapter3?.finished_at),
+    };
+
+    /** Button state for stage index (0–4): 0 Locked, 1 Play, 2 Replay, 3 Continue. Stage 1 is always Play or Replay. */
     function getStageButtonState(stageIndex) {
         if (clearedStages[stageIndex]) return 2; // Replay
-        if (stageIndex === 0) return 1;          // Stage 1 always Play until cleared
+        if (stageIndex === 0) return 1;          // Stage 1 (prologue) always Play until cleared
+        // Stages 1,2,3 (castle, woods, gate): show Continue if that chapter is in progress
+        if (stageIndex === 1 && chapterInProgress[1]) return 3;
+        if (stageIndex === 2 && chapterInProgress[2]) return 3;
+        if (stageIndex === 3 && chapterInProgress[3]) return 3;
         return clearedStages[stageIndex - 1] ? 1 : 0; // Play if previous cleared, else Locked
+    }
+
+    function getStageButtonImage(stageIndex) {
+        const s = getStageButtonState(stageIndex);
+        return BUTTON_IMGS[s === 3 ? 1 : s]; // Continue uses play icon
+    }
+    function getStageButtonAlt(stageIndex) {
+        const s = getStageButtonState(stageIndex);
+        return s === 0 ? 'Locked' : s === 1 ? 'Play' : s === 2 ? 'Replay' : 'Continue';
     }
 
     function onStageButtonClick(stageIndex) {
         const state = getStageButtonState(stageIndex);
+        // Continue (3): go to first page of that chapter so hero can resume
+        if (state === 3) {
+            if (stageIndex === 1) { router.visit(route('mainplay.kingdom1')); return; }
+            if (stageIndex === 2) { router.visit(route('mainplay.whisper1')); return; }
+            if (stageIndex === 3) { router.visit(route('mainplay.clouds1')); return; }
+        }
         // Stage 1 (Prologue): both Play and Replay go to the Prologue intro page
         if (stageIndex === 0 && (state === 1 || state === 2)) {
             router.visit(route('mainplay.prologue-intro'));
             return;
         }
-        // Stage 2 (Castle/Chapter 1): both Play and Replay go to the Chapter 1 intro page
+        // Stage 2 (Castle/Chapter 1): Play/Replay → Chapter 1 intro
         if (stageIndex === 1 && (state === 1 || state === 2)) {
             router.visit(route('mainplay.chapter1-intro'));
             return;
         }
-        // Stage 3 (Woods/Chapter 2): both Play and Replay go to the Chapter 2 intro page
+        // Stage 3 (Woods/Chapter 2): Play/Replay → Chapter 2 intro
         if (stageIndex === 2 && (state === 1 || state === 2)) {
             router.visit(route('mainplay.chapter2-intro'));
             return;
         }
-        // Stage 4 (Clouds/Chapter 3): both Play and Replay go to Chapter 3 intro
+        // Stage 4 (Clouds/Chapter 3): Play/Replay → Chapter 3 intro
         if (stageIndex === 3 && (state === 1 || state === 2)) {
             router.visit(route('mainplay.chapter3-intro'));
             return;
@@ -674,10 +700,10 @@ export default function Mainplay() {
                                             className="w-full h-full object-contain object-left-top select-none block"
                                         />
                                         <img
-                                            src={BUTTON_IMGS[getStageButtonState(0)]}
+                                            src={getStageButtonImage(0)}
                                             loading="lazy"
                                             decoding="async"
-                                            alt={getStageButtonState(0) === 0 ? 'Locked' : getStageButtonState(0) === 1 ? 'Play' : 'Replay'}
+                                            alt={getStageButtonAlt(0)}
                                             className="absolute -bottom-[68px] left-[38%] -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -707,10 +733,10 @@ export default function Mainplay() {
                                             className={`w-full h-full object-contain object-right-top select-none block ${!clearedStages[4] ? '[filter:brightness(0.5)_contrast(1.35)]' : ''}`}
                                         />
                                         <img
-                                            src={BUTTON_IMGS[getStageButtonState(4)]}
+                                            src={getStageButtonImage(4)}
                                             loading="lazy"
                                             decoding="async"
-                                            alt={getStageButtonState(4) === 0 ? 'Locked' : getStageButtonState(4) === 1 ? 'Play' : 'Replay'}
+                                            alt={getStageButtonAlt(4)}
                                             className="absolute -bottom-[68px] left-[62%] -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -741,10 +767,10 @@ export default function Mainplay() {
                                             className={`w-full h-full object-contain object-center select-none block ${!clearedStages[1] ? '[filter:brightness(0.6)_contrast(1.3)]' : ''}`}
                                         />
                                         <img
-                                            src={BUTTON_IMGS[getStageButtonState(1)]}
+                                            src={getStageButtonImage(1)}
                                             loading="lazy"
                                             decoding="async"
-                                            alt={getStageButtonState(1) === 0 ? 'Locked' : getStageButtonState(1) === 1 ? 'Play' : 'Replay'}
+                                            alt={getStageButtonAlt(1)}
                                             className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -775,10 +801,10 @@ export default function Mainplay() {
                                             className={`w-full h-full object-contain object-center select-none block ${!clearedStages[3] ? '[filter:brightness(0.4)_contrast(1.35)]' : ''}`}
                                         />
                                         <img
-                                            src={BUTTON_IMGS[getStageButtonState(3)]}
+                                            src={getStageButtonImage(3)}
                                             loading="lazy"
                                             decoding="async"
-                                            alt={getStageButtonState(3) === 0 ? 'Locked' : getStageButtonState(3) === 1 ? 'Play' : 'Replay'}
+                                            alt={getStageButtonAlt(3)}
                                             className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -809,10 +835,10 @@ export default function Mainplay() {
                                             className={`w-full h-full object-contain object-center select-none block ${!clearedStages[2] ? '[filter:brightness(0.55)_contrast(1.3)]' : ''}`}
                                         />
                                         <img
-                                            src={BUTTON_IMGS[getStageButtonState(2)]}
+                                            src={getStageButtonImage(2)}
                                             loading="lazy"
                                             decoding="async"
-                                            alt={getStageButtonState(2) === 0 ? 'Locked' : getStageButtonState(2) === 1 ? 'Play' : 'Replay'}
+                                            alt={getStageButtonAlt(2)}
                                             className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -982,7 +1008,7 @@ export default function Mainplay() {
                                                 <>
                                                     {/* Profile extension – wooden plaque (only when Profile tab is clicked; bounce-out on close) */}
                                                     {(showProfileExtension || profileClosing) && (
-                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[12rem] sm:-mt-[14rem] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
+                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[14rem] sm:-mt-[16rem] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
                                                         <div className="relative w-full flex flex-col items-center p-16 sm:p-20 min-h-[16rem] sm:min-h-[20rem]">
                                                             <img
                                                                 src="/assets/img/tabframe.webp"
