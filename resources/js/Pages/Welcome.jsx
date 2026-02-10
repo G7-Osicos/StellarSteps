@@ -18,7 +18,6 @@ export default function Welcome() {
     const [phase, setPhase] = useState(PHASE_BOOK);
     const [leoInPosition, setLeoInPosition] = useState(false);
     const { playVoice, stopVoice } = useAudio() ?? {};
-    const [voiceReady, setVoiceReady] = useState(false);
     const voiceStartedRef = useRef(false);
 
     useEffect(() => {
@@ -33,23 +32,11 @@ export default function Welcome() {
         };
     }, []);
 
-    // Unlock narration playback after the first user interaction
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const unlock = () => {
-            setVoiceReady(true);
-            window.removeEventListener('pointerdown', unlock);
-        };
-        window.addEventListener('pointerdown', unlock);
-        return () => window.removeEventListener('pointerdown', unlock);
-    }, []);
-
     // Play Leo's welcome line when narration bubble appears,
     // and only hide Leo + bubble after the voice line finishes.
     useEffect(() => {
         if (
             phase === PHASE_NARRATION &&
-            voiceReady &&
             !voiceStartedRef.current &&
             AUDIO.welcome?.leoIntro &&
             playVoice
@@ -62,7 +49,7 @@ export default function Welcome() {
         if (phase === PHASE_GONE && stopVoice) {
             stopVoice();
         }
-    }, [phase, voiceReady, playVoice, stopVoice]);
+    }, [phase, playVoice, stopVoice]);
 
     // Ensure voice stops when this page unmounts
     useEffect(
