@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 const KINGDOM3_BGM = '/assets/audio/bgm/BGM - Frame 10 - 14.wav';
 const SFX_CROWN = '/assets/audio/bgm/SFX - My Crown! You found it!.MP3';
 const VOICE_INSTRUCTIONS = '/assets/audio/ins/Instructions3.m4a';
-const IMG_GAME_OVER_X = '/assets/img/X.png';
+const IMG_GAME_OVER_X = '/assets/img/X.png.webp';
 const MAX_LIVES = 3;
 const GAME_OVER_X_DURATION_MS = 2000;
 

@@ -53,7 +53,7 @@ export default function Welcome() {
         <>
             <Head title="Stellar Steps">
                 <link rel="preload" href="/assets/img/LP_BG-960w.webp" as="image" />
-                <link rel="preload" href="/assets/img/Leointro.png" as="image" />
+                <link rel="preload" href="/assets/img/Leointro.png.webp" as="image" />
             </Head>
             <div className="min-h-screen w-full flex items-center justify-center relative" style={{ backgroundColor: '#5c4a3d' }}>
                 <img
@@ -74,7 +74,7 @@ export default function Welcome() {
                     }`}
                 >
                     <img
-                        src="/assets/img/Leointro.png"
+                        src="/assets/img/Leointro.png.webp"
                         alt=""
                         loading="eager"
                         decoding="async"

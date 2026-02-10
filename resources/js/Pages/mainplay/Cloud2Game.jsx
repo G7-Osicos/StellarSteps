@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
 
-const CLOUD_IMG = '/assets/img/The Gate of Gratitude-20260201T170632Z-3-001/The Gate of Gratitude/cloud.PNG';
+const CLOUD_IMG = '/assets/img/The Gate of Gratitude-20260201T170632Z-3-001/The Gate of Gratitude/cloud.PNG.webp';
 const ROCK_PLATFORM_IMG = '/assets/img/The Gate of Gratitude-20260201T170632Z-3-001/The Gate of Gratitude/rock platform.webp';
 const BAG_IMG = '/assets/img/The Gate of Gratitude-20260201T170632Z-3-001/The Gate of Gratitude/Bag Icon.webp';
 const MARKY_IMG = '/assets/img/whisperingwoods/Marky4-right.webp';
 
 const WIN_SCORE = 10;
 const MAX_LIVES = 3;
-const IMG_GAME_OVER_X = '/assets/img/X.png';
+const IMG_GAME_OVER_X = '/assets/img/X.png.webp';
 const GAME_OVER_X_DURATION_MS = 2000;
 
 function Heart({ filled, className = '' }) {

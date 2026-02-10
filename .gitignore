@@ -22,6 +22,7 @@ StellarSteps/
 /public/build
 /public/hot
 /public/storage
+/public/assets/img-resized
 /storage/*.key
 /storage/pail
 /vendor
