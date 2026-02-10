@@ -124,6 +124,8 @@ export default function Mainplay() {
     const [settingsBoardClosing, setSettingsBoardClosing] = useState(false);
     const [showProgressBoard, setShowProgressBoard] = useState(false);
     const [progressBoardClosing, setProgressBoardClosing] = useState(false);
+    // Main book content mode: 'map' = stage images/buttons, 'help' = empty book (for Help tab)
+    const [activeMainTab, setActiveMainTab] = useState('map');
     const { screenBrightness, textSize, updateSettings } = useSettings() ?? { screenBrightness: 100, textSize: 100, updateSettings: () => {} };
     const { volume, muted, updateVolume, updateMuted, stopBGM } = useAudio() ?? { volume: 80, muted: false, updateVolume: () => {}, updateMuted: () => {}, stopBGM: () => {} };
     /** Which stages are cleared (1–5). From server (user-specific) or URL params. */
@@ -452,7 +454,25 @@ export default function Mainplay() {
                         const menuLeftClass = tab.id === 'menu' ? MENU_TAB_TRANSLATE_LEFT : '';
                         const menuStyle = tab.id === 'menu' ? { transform: 'translateX(-15rem)' } : (tab.id !== 'menu' ? { transform: `translateX(${OTHER_TABS_TRANSLATE_RIGHT})` } : undefined);
                         const wrapperProps = isButtonTab
-                            ? { type: 'button', 'aria-label': tab.label || tab.id, title: tab.label || tab.id, style: { ...menuStyle, outline: 'none', boxShadow: 'none', border: 'none', WebkitTapHighlightColor: 'transparent' }, className: baseClass + menuLeftClass + ' wood-tab-btn group transition-all duration-200 rounded', ...(tab.id === 'profile' ? { onClick: toggleProfileExtension } : {}), ...(tab.id === 'menu' ? { onClick: () => { if (showWoodenSign && !woodenSignClosing) setWoodenSignClosing(true); else if (!showWoodenSign) setShowWoodenSign(true); } } : {}), ...(tab.id === 'stars' ? { onClick: () => setShowProgressBoard(true) } : {}) }
+                            ? {
+                                  type: 'button',
+                                  'aria-label': tab.label || tab.id,
+                                  title: tab.label || tab.id,
+                                  style: { ...menuStyle, outline: 'none', boxShadow: 'none', border: 'none', WebkitTapHighlightColor: 'transparent' },
+                                  className: baseClass + menuLeftClass + ' wood-tab-btn group transition-all duration-200 rounded',
+                                  ...(tab.id === 'profile' ? { onClick: toggleProfileExtension } : {}),
+                                  ...(tab.id === 'menu'
+                                      ? {
+                                            onClick: () => {
+                                                if (showWoodenSign && !woodenSignClosing) setWoodenSignClosing(true);
+                                                else if (!showWoodenSign) setShowWoodenSign(true);
+                                            },
+                                        }
+                                      : {}),
+                                  ...(tab.id === 'stars' ? { onClick: () => setShowProgressBoard(true) } : {}),
+                                  ...(tab.id === 'help' ? { onClick: () => setActiveMainTab('help') } : {}),
+                                  ...(tab.id === 'map' ? { onClick: () => setActiveMainTab('map') } : {}),
+                              }
                             : { style: menuStyle, className: baseClass + menuLeftClass + ' group transition-all duration-200' };
                         return (
                             <Wrapper key={tab.id} {...wrapperProps}>
@@ -486,115 +506,174 @@ export default function Mainplay() {
                                 className="max-w-full max-h-full w-auto h-auto object-contain drop-shadow-2xl pointer-events-none select-none block"
                             />
 
-                            {/* Stage 1 – prologue left (B → C when cleared) */}
-                            <div
-                                className="absolute z-20 box-border cursor-pointer"
-                                style={{
-                                    left: 90,
-                                    top: 100,
-                                    width: 380,
-                                    height: 300,
-                                    minWidth: 200,
-                                    minHeight: 160,
-                                }}
-                            >
-                                <img
-                                    src={clearedStages[0] ? STAGE_ILLUSTRATIONS[0].C : STAGE_ILLUSTRATIONS[0].B}
-                                    alt="Stage 1 Prologue"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="w-full h-full object-contain object-left-top select-none block"
-                                />
-                                <img src={BUTTON_IMGS[getStageButtonState(0)]} loading="lazy" decoding="async" alt={getStageButtonState(0) === 0 ? 'Locked' : getStageButtonState(0) === 1 ? 'Play' : 'Replay'} className="absolute -bottom-[68px] left-[38%] -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl" onClick={(e) => { e.stopPropagation(); onStageButtonClick(0); }} aria-hidden />
-                            </div>
+                            {activeMainTab === 'map' && (
+                                <>
+                                    {/* Stage 1 – prologue left (B → C when cleared) */}
+                                    <div
+                                        className="absolute z-20 box-border cursor-pointer"
+                                        style={{
+                                            left: 90,
+                                            top: 100,
+                                            width: 380,
+                                            height: 300,
+                                            minWidth: 200,
+                                            minHeight: 160,
+                                        }}
+                                    >
+                                        <img
+                                            src={clearedStages[0] ? STAGE_ILLUSTRATIONS[0].C : STAGE_ILLUSTRATIONS[0].B}
+                                            alt="Stage 1 Prologue"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className="w-full h-full object-contain object-left-top select-none block"
+                                        />
+                                        <img
+                                            src={BUTTON_IMGS[getStageButtonState(0)]}
+                                            loading="lazy"
+                                            decoding="async"
+                                            alt={getStageButtonState(0) === 0 ? 'Locked' : getStageButtonState(0) === 1 ? 'Play' : 'Replay'}
+                                            className="absolute -bottom-[68px] left-[38%] -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onStageButtonClick(0);
+                                            }}
+                                            aria-hidden
+                                        />
+                                    </div>
 
-                            {/* Stage 5 – prologue right (B → C when cleared) */}
-                            <div
-                                className="absolute z-20 box-border cursor-pointer"
-                                style={{
-                                    right: 90,
-                                    top: 100,
-                                    width: 380,
-                                    height: 300,
-                                    minWidth: 200,
-                                    minHeight: 160,
-                                }}
-                            >
-                                <img
-                                    src={clearedStages[4] ? STAGE_ILLUSTRATIONS[4].C : STAGE_ILLUSTRATIONS[4].B}
-                                    alt="Stage 5 Prologue"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className={`w-full h-full object-contain object-right-top select-none block ${!clearedStages[4] ? '[filter:brightness(0.5)_contrast(1.35)]' : ''}`}
-                                />
-                                <img src={BUTTON_IMGS[getStageButtonState(4)]} loading="lazy" decoding="async" alt={getStageButtonState(4) === 0 ? 'Locked' : getStageButtonState(4) === 1 ? 'Play' : 'Replay'} className="absolute -bottom-[68px] left-[62%] -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl" onClick={(e) => { e.stopPropagation(); onStageButtonClick(4); }} aria-hidden />
-                            </div>
+                                    {/* Stage 5 – prologue right (B → C when cleared) */}
+                                    <div
+                                        className="absolute z-20 box-border cursor-pointer"
+                                        style={{
+                                            right: 90,
+                                            top: 100,
+                                            width: 380,
+                                            height: 300,
+                                            minWidth: 200,
+                                            minHeight: 160,
+                                        }}
+                                    >
+                                        <img
+                                            src={clearedStages[4] ? STAGE_ILLUSTRATIONS[4].C : STAGE_ILLUSTRATIONS[4].B}
+                                            alt="Stage 5 Prologue"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className={`w-full h-full object-contain object-right-top select-none block ${!clearedStages[4] ? '[filter:brightness(0.5)_contrast(1.35)]' : ''}`}
+                                        />
+                                        <img
+                                            src={BUTTON_IMGS[getStageButtonState(4)]}
+                                            loading="lazy"
+                                            decoding="async"
+                                            alt={getStageButtonState(4) === 0 ? 'Locked' : getStageButtonState(4) === 1 ? 'Play' : 'Replay'}
+                                            className="absolute -bottom-[68px] left-[62%] -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onStageButtonClick(4);
+                                            }}
+                                            aria-hidden
+                                        />
+                                    </div>
 
-                            {/* Stage 2 – castle (B → C when cleared) */}
-                            <div
-                                className="absolute z-20 box-border cursor-pointer"
-                                style={{
-                                    left: 170,
-                                    bottom: 60,
-                                    width: 460,
-                                    height: 400,
-                                    minWidth: 260,
-                                    minHeight: 220,
-                                }}
-                            >
-                                <img
-                                    src={clearedStages[1] ? STAGE_ILLUSTRATIONS[1].C : STAGE_ILLUSTRATIONS[1].B}
-                                    alt="Stage 2 Castle"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className={`w-full h-full object-contain object-center select-none block ${!clearedStages[1] ? '[filter:brightness(0.6)_contrast(1.3)]' : ''}`}
-                                />
-                                <img src={BUTTON_IMGS[getStageButtonState(1)]} loading="lazy" decoding="async" alt={getStageButtonState(1) === 0 ? 'Locked' : getStageButtonState(1) === 1 ? 'Play' : 'Replay'} className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl" onClick={(e) => { e.stopPropagation(); onStageButtonClick(1); }} aria-hidden />
-                            </div>
+                                    {/* Stage 2 – castle (B → C when cleared) */}
+                                    <div
+                                        className="absolute z-20 box-border cursor-pointer"
+                                        style={{
+                                            left: 170,
+                                            bottom: 60,
+                                            width: 460,
+                                            height: 400,
+                                            minWidth: 260,
+                                            minHeight: 220,
+                                        }}
+                                    >
+                                        <img
+                                            src={clearedStages[1] ? STAGE_ILLUSTRATIONS[1].C : STAGE_ILLUSTRATIONS[1].B}
+                                            alt="Stage 2 Castle"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className={`w-full h-full object-contain object-center select-none block ${!clearedStages[1] ? '[filter:brightness(0.6)_contrast(1.3)]' : ''}`}
+                                        />
+                                        <img
+                                            src={BUTTON_IMGS[getStageButtonState(1)]}
+                                            loading="lazy"
+                                            decoding="async"
+                                            alt={getStageButtonState(1) === 0 ? 'Locked' : getStageButtonState(1) === 1 ? 'Play' : 'Replay'}
+                                            className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onStageButtonClick(1);
+                                            }}
+                                            aria-hidden
+                                        />
+                                    </div>
 
-                            {/* Stage 4 – gate (B → C when cleared) */}
-                            <div
-                                className="absolute z-20 box-border cursor-pointer"
-                                style={{
-                                    right: 170,
-                                    bottom: 60,
-                                    width: 460,
-                                    height: 400,
-                                    minWidth: 260,
-                                    minHeight: 220,
-                                }}
-                            >
-                                <img
-                                    src={clearedStages[3] ? STAGE_ILLUSTRATIONS[3].C : STAGE_ILLUSTRATIONS[3].B}
-                                    alt="Stage 4 Gate"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className={`w-full h-full object-contain object-center select-none block ${!clearedStages[3] ? '[filter:brightness(0.4)_contrast(1.35)]' : ''}`}
-                                />
-                                <img src={BUTTON_IMGS[getStageButtonState(3)]} loading="lazy" decoding="async" alt={getStageButtonState(3) === 0 ? 'Locked' : getStageButtonState(3) === 1 ? 'Play' : 'Replay'} className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl" onClick={(e) => { e.stopPropagation(); onStageButtonClick(3); }} aria-hidden />
-                            </div>
+                                    {/* Stage 4 – gate (B → C when cleared) */}
+                                    <div
+                                        className="absolute z-20 box-border cursor-pointer"
+                                        style={{
+                                            right: 170,
+                                            bottom: 60,
+                                            width: 460,
+                                            height: 400,
+                                            minWidth: 260,
+                                            minHeight: 220,
+                                        }}
+                                    >
+                                        <img
+                                            src={clearedStages[3] ? STAGE_ILLUSTRATIONS[3].C : STAGE_ILLUSTRATIONS[3].B}
+                                            alt="Stage 4 Gate"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className={`w-full h-full object-contain object-center select-none block ${!clearedStages[3] ? '[filter:brightness(0.4)_contrast(1.35)]' : ''}`}
+                                        />
+                                        <img
+                                            src={BUTTON_IMGS[getStageButtonState(3)]}
+                                            loading="lazy"
+                                            decoding="async"
+                                            alt={getStageButtonState(3) === 0 ? 'Locked' : getStageButtonState(3) === 1 ? 'Play' : 'Replay'}
+                                            className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onStageButtonClick(3);
+                                            }}
+                                            aria-hidden
+                                        />
+                                    </div>
 
-                            {/* Stage 3 – woods (B → C when cleared) */}
-                            <div
-                                className="absolute z-20 box-border cursor-pointer"
-                                style={{
-                                    left: 570,
-                                    top: 50,
-                                    width: 460,
-                                    height: 400,
-                                    minWidth: 260,
-                                    minHeight: 220,
-                                }}
-                            >
-                                <img
-                                    src={clearedStages[2] ? STAGE_ILLUSTRATIONS[2].C : STAGE_ILLUSTRATIONS[2].B}
-                                    alt="Stage 3 Woods"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className={`w-full h-full object-contain object-center select-none block ${!clearedStages[2] ? '[filter:brightness(0.55)_contrast(1.3)]' : ''}`}
-                                />
-                                <img src={BUTTON_IMGS[getStageButtonState(2)]} loading="lazy" decoding="async" alt={getStageButtonState(2) === 0 ? 'Locked' : getStageButtonState(2) === 1 ? 'Play' : 'Replay'} className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl" onClick={(e) => { e.stopPropagation(); onStageButtonClick(2); }} aria-hidden />
-                            </div>
+                                    {/* Stage 3 – woods (B → C when cleared) */}
+                                    <div
+                                        className="absolute z-20 box-border cursor-pointer"
+                                        style={{
+                                            left: 570,
+                                            top: 50,
+                                            width: 460,
+                                            height: 400,
+                                            minWidth: 260,
+                                            minHeight: 220,
+                                        }}
+                                    >
+                                        <img
+                                            src={clearedStages[2] ? STAGE_ILLUSTRATIONS[2].C : STAGE_ILLUSTRATIONS[2].B}
+                                            alt="Stage 3 Woods"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className={`w-full h-full object-contain object-center select-none block ${!clearedStages[2] ? '[filter:brightness(0.55)_contrast(1.3)]' : ''}`}
+                                        />
+                                        <img
+                                            src={BUTTON_IMGS[getStageButtonState(2)]}
+                                            loading="lazy"
+                                            decoding="async"
+                                            alt={getStageButtonState(2) === 0 ? 'Locked' : getStageButtonState(2) === 1 ? 'Play' : 'Replay'}
+                                            className="absolute -bottom-[68px] left-1/2 -translate-x-1/2 h-[200px] w-auto max-w-[95%] object-contain select-none cursor-pointer transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onStageButtonClick(2);
+                                            }}
+                                            aria-hidden
+                                        />
+                                    </div>
+                                </>
+                            )}
 
                             {/* Wooden sign – only when Menu is clicked; slide up then bounce, slide down on close */}
                             {(showWoodenSign || woodenSignClosing) && (
