@@ -1,10 +1,10 @@
 /**
- * Resize and compress images in public/assets/img for faster loading.
- * - Resizes to max 1600px on longest side (does not enlarge small images)
- * - Compresses to WebP quality 82
- * - Outputs to public/assets/img-resized/ (copy into img/ to replace originals)
+ * Compress images (no resize) in public/assets/img for faster loading.
+ * - Keeps original dimensions, only reduces file size via WebP compression
+ * - Quality 82 (good balance of size vs visual quality)
+ * - Outputs to public/assets/img-compressed/ (copy into img/ to replace originals)
  *
- * Run: node scripts/resize-images.mjs
+ * Run: node scripts/compress-images.mjs
  */
 import fs from 'fs';
 import path from 'path';
@@ -13,10 +13,9 @@ import sharp from 'sharp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMG_DIR = path.join(__dirname, '..', 'public', 'assets', 'img');
-const OUT_DIR = path.join(__dirname, '..', 'public', 'assets', 'img-resized');
-const MAX_SIZE = 1600;
+const OUT_DIR = path.join(__dirname, '..', 'public', 'assets', 'img-compressed');
 const WEBP_QUALITY = 82;
-const MIN_SIZE_KB = 80; // Only process files larger than this (skip tiny icons)
+const MIN_SIZE_KB = 5; // Skip tiny files (icons, etc.)
 
 const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
@@ -38,13 +37,12 @@ async function processFile(file) {
     if (sizeKb < MIN_SIZE_KB) return { processed: false, reason: 'small' };
 
     const isWebp = ext === '.webp';
-    // Output to img-resized/ preserving folder structure; PNG->file.png.webp, WebP->same path
     const outRel = isWebp ? relPath : path.join(path.dirname(relPath) || '.', path.basename(file) + '.webp');
     const outPath = path.join(OUT_DIR, outRel);
     fs.mkdirSync(path.dirname(outPath), { recursive: true });
 
+    // No resize - only compress (preserves dimensions)
     await sharp(file)
-        .resize(MAX_SIZE, MAX_SIZE, { fit: 'inside', withoutEnlargement: true })
         .webp({ quality: WEBP_QUALITY })
         .toFile(outPath);
 
@@ -63,7 +61,7 @@ async function processFile(file) {
 
 async function main() {
     const files = [...walk(IMG_DIR)];
-    console.log(`Found ${files.length} images. Processing files > ${MIN_SIZE_KB}KB...\n`);
+    console.log(`Found ${files.length} images. Compressing files > ${MIN_SIZE_KB}KB (no resize)...\n`);
 
     let processed = 0;
     let totalSaved = 0;
@@ -82,8 +80,8 @@ async function main() {
     }
 
     console.log(`\nDone. Processed ${processed} images. Total saved ~${totalSaved.toFixed(0)}KB.`);
-    console.log(`\nOptimized images are in public/assets/img-resized/`);
-    console.log(`To use them: copy img-resized/* into img/ (replace originals).`);
+    console.log(`\nCompressed images are in public/assets/img-compressed/`);
+    console.log(`To use them: copy img-compressed/* into img/ (replace originals).`);
 }
 
 main().catch((err) => {
