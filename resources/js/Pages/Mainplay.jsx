@@ -533,15 +533,19 @@ export default function Mainplay() {
                                       })
                                     : 'Not recorded yet';
                             let durationText = 'Not available yet';
-                            if (startedAt && finishedAt && finishedAt > startedAt) {
-                                const ms = finishedAt.getTime() - startedAt.getTime();
-                                const totalSeconds = Math.round(ms / 1000);
-                                const minutes = Math.floor(totalSeconds / 60);
-                                const seconds = totalSeconds % 60;
-                                durationText =
-                                    minutes > 0
-                                        ? `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
-                                        : `${seconds} second${seconds !== 1 ? 's' : ''}`;
+                            if (startedAt && finishedAt) {
+                                if (finishedAt > startedAt) {
+                                    const ms = finishedAt.getTime() - startedAt.getTime();
+                                    const totalSeconds = Math.round(ms / 1000);
+                                    const minutes = Math.floor(totalSeconds / 60);
+                                    const seconds = totalSeconds % 60;
+                                    durationText =
+                                        minutes > 0
+                                            ? `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
+                                            : `${seconds} second${seconds !== 1 ? 's' : ''}`;
+                                } else {
+                                    durationText = 'Completed (exact duration not recorded)';
+                                }
                             }
                             return (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 sm:gap-6 pt-[16%] pb-[18%] px-[12%] pointer-events-none">

@@ -1,11 +1,18 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useEffect } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
 
 export default function Whisper1() {
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
     const { playVoice, stopVoice } = useAudio() ?? {};
+    // Record chapter 2 start when hero lands here (intro or Continue from map)
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.start'), { chapter: 2 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
     useEffect(() => {
         const src = AUDIO.whisper1?.voice?.[0];
         if (src && playVoice) playVoice(src);

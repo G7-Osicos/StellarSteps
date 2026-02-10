@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
 import { useState, useEffect } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
@@ -10,8 +10,15 @@ const MARKY_LEFT = '/assets/img/Marky2-left.webp';
 const MARKY3 = '/assets/img/Marky3.webp';
 
 export default function Clouds1() {
+    const { auth } = usePage();
+    const user = auth?.user ?? null;
     const [step, setStep] = useState(1);
     const { playVoice, stopVoice, playAmbient, stopAmbient } = useAudio() ?? {};
+    // Record chapter 3 start when hero lands here (intro or Continue from map)
+    useEffect(() => {
+        if (!user || user.role !== 'hero') return;
+        router.post(route('chapter-progress.start'), { chapter: 3 }, { preserveScroll: true, preserveState: true });
+    }, [user]);
     useEffect(() => {
         const src = AUDIO.clouds1?.voice?.[step - 1];
         if (src && playVoice) playVoice(src);
