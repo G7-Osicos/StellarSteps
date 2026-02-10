@@ -229,6 +229,8 @@ export default function Stage2Attic() {
                             {/* Base book from the opening scene */}
                             <img
                                 src="/assets/img/Book.webp"
+                                srcSet="/assets/img/Book-800w.webp 800w, /assets/img/Book-1600w.webp 1600w"
+                                sizes="(max-width: 768px) 85vw, 600px"
                                 alt="A magical story book"
                                 loading="eager"
                                 decoding="async"
@@ -239,6 +241,8 @@ export default function Stage2Attic() {
                                 shine effect used on the landing screen title. */}
                             <img
                                 src="/assets/img/title.webp"
+                                srcSet="/assets/img/title-800w.webp 800w, /assets/img/title-1600w.webp 1600w"
+                                sizes="(max-width: 768px) 60vw, 450px"
                                 alt="Stellar Steps"
                                 loading="eager"
                                 decoding="async"

@@ -52,6 +52,12 @@ for i in 1 2 3 4 5 6 7 8 9 10; do
     echo "MySQL not ready, retrying in 3s ($i/10)..."
     sleep 3
 done
+
+echo "Caching config, routes, views..."
+php artisan config:cache 2>/dev/null || true
+php artisan route:cache 2>/dev/null || true
+php artisan view:cache 2>/dev/null || true
+
 echo "Starting server..."
 
 # Railway injects PORT (e.g. 8080). Fallback for local runs.

@@ -16,10 +16,10 @@ class ImageCacheHeaders
         /** @var \Symfony\Component\HttpFoundation\Response $response */
         $response = $next($request);
 
-        $path = $request->path(); // e.g. "assets/img/Book.webp"
+        $path = $request->path(); // e.g. "assets/img/Book.webp" or "build/assets/app-xxx.js"
 
-        // Only target our public image assets, not API or HTML responses.
-        if ($this->isAssetImagePath($path)) {
+        // Long-lived cache for static assets (images + Vite build hashes)
+        if ($this->isAssetImagePath($path) || $this->isBuildAssetPath($path)) {
             // One year cache, immutable so browser won't revalidate on reload.
             $response->headers->set('Cache-Control', 'public, max-age=31536000, immutable');
         }
@@ -44,6 +44,15 @@ class ImageCacheHeaders
             || str_ends_with($lower, '.jpeg')
             || str_ends_with($lower, '.gif')
             || str_ends_with($lower, '.svg');
+    }
+
+    /**
+     * Vite build assets (hashed filenames) are immutable.
+     */
+    private function isBuildAssetPath(string $path): bool
+    {
+        return str_starts_with($path, 'build/assets/')
+            && (str_ends_with($path, '.js') || str_ends_with($path, '.css'));
     }
 }
 

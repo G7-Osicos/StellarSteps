@@ -413,10 +413,17 @@ export default function Mainplay() {
                     </div>
                 </div>
             )}
-            <div
-                className="relative w-full h-screen overflow-hidden bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: "url('/assets/img/LP_BG.webp')" }}
-            >
+            <div className="relative w-full h-screen overflow-hidden">
+                <img
+                    src="/assets/img/LP_BG.webp"
+                    srcSet="/assets/img/LP_BG-960w.webp 960w, /assets/img/LP_BG-1920w.webp 1920w"
+                    sizes="100vw"
+                    alt=""
+                    fetchpriority="high"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+                    aria-hidden
+                />
                 {/* Fixed-size layout canvas – scaled to fit viewport */}
                 <div
                     className="absolute left-1/2 top-1/2 origin-center flex flex-col"
@@ -473,6 +480,8 @@ export default function Mainplay() {
                             {/* Open book background */}
                             <img
                                 src="/assets/img/openbook.webp"
+                                srcSet="/assets/img/openbook-800w.webp 800w, /assets/img/openbook-1600w.webp 1600w"
+                                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 70vw, 900px"
                                 alt="Story book opened"
                                 fetchpriority="high"
                                 decoding="async"

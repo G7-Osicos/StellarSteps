@@ -52,6 +52,8 @@ export default function Chapter2Intro() {
                         <div className="relative flex flex-col items-center gap-6">
                             <img
                                 src="/assets/img/title.webp"
+                                    srcSet="/assets/img/title-800w.webp 800w, /assets/img/title-1600w.webp 1600w"
+                                    sizes="(max-width: 768px) 75vw, 50vw"
                                 alt="Stellar Steps"
                                 loading="eager"
                                 decoding="async"

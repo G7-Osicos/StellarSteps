@@ -85,6 +85,8 @@ export default function GateofgratitudeComplete() {
                 {/* Background */}
                 <img
                     src="/assets/img/LP_BG.webp"
+                    srcSet="/assets/img/LP_BG-960w.webp 960w, /assets/img/LP_BG-1920w.webp 1920w"
+                    sizes="100vw"
                     alt=""
                     loading="eager"
                     decoding="async"

@@ -20,6 +20,8 @@ export default function StellarstepsComplete() {
                 <BackToMapButton />
                 <img
                     src={LP_BG}
+                    srcSet="/assets/img/LP_BG-960w.webp 960w, /assets/img/LP_BG-1920w.webp 1920w"
+                    sizes="100vw"
                     alt=""
                     loading="eager"
                     decoding="async"
@@ -31,6 +33,8 @@ export default function StellarstepsComplete() {
                     </p>
                     <img
                         src={TITLE}
+                        srcSet="/assets/img/title-800w.webp 800w, /assets/img/title-1600w.webp 1600w"
+                        sizes="(max-width: 768px) 78vw, 880px"
                         alt="Stellar Steps"
                         loading="eager"
                         decoding="async"
