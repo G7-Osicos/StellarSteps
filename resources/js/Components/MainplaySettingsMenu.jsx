@@ -10,6 +10,11 @@ export default function MainplaySettingsMenu({ className = '' }) {
     const [currentUrl, setCurrentUrl] = useState(
         typeof window !== 'undefined' ? window.location.pathname : ''
     );
+    const [open, setOpen] = useState(false);
+    const panelRef = useRef(null);
+
+    const { screenBrightness, updateSettings } = useSettings() ?? { screenBrightness: 100, updateSettings: () => {} };
+    const { volume, muted, updateVolume, updateMuted } = useAudio() ?? { volume: 80, muted: false, updateVolume: () => {}, updateMuted: () => {} };
 
     // Keep the menu in sync with Inertia navigation (this component is mounted
     // outside the Inertia tree, so it won't automatically re-render on route changes).
@@ -26,20 +31,6 @@ export default function MainplaySettingsMenu({ className = '' }) {
         };
     }, []);
 
-    // Hide burger menu on Welcome, Signup, and Mainplay map;
-    // show it on story pages (prologue, chapters, epilogue, etc.).
-    // Hide on Welcome, auth, and Mainplay map; show only on story pages
-    const HIDE_PATHS = ['/', '/mainplay', '/signup', '/login'];
-    if (HIDE_PATHS.includes(currentUrl)) {
-        return null;
-    }
-
-    const [open, setOpen] = useState(false);
-    const panelRef = useRef(null);
-
-    const { screenBrightness, updateSettings } = useSettings() ?? { screenBrightness: 100, updateSettings: () => {} };
-    const { volume, muted, updateVolume, updateMuted } = useAudio() ?? { volume: 80, muted: false, updateVolume: () => {}, updateMuted: () => {} };
-
     // Close when clicking outside
     useEffect(() => {
         if (!open) return;
@@ -51,6 +42,13 @@ export default function MainplaySettingsMenu({ className = '' }) {
         document.addEventListener('mousedown', handleClick);
         return () => document.removeEventListener('mousedown', handleClick);
     }, [open]);
+
+    // Hide burger menu on Welcome, Signup, and Mainplay map;
+    // show it on story pages (prologue, chapters, epilogue, etc.).
+    const HIDE_PATHS = ['/', '/mainplay', '/signup', '/login'];
+    if (HIDE_PATHS.includes(currentUrl)) {
+        return null;
+    }
 
     return (
         <div ref={panelRef} className={`relative ${className}`}>
