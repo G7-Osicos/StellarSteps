@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { usePage } from '@inertiajs/react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAudio } from '@/contexts/AudioContext';
 
@@ -8,9 +7,8 @@ import { useAudio } from '@/contexts/AudioContext';
  * Screen Brightness, Volume, and Mute — so users can adjust settings from any page.
  */
 export default function MainplaySettingsMenu({ className = '' }) {
-    const page = usePage();
     const currentUrl =
-        page?.url ?? (typeof window !== 'undefined' ? window.location.pathname : '');
+        typeof window !== 'undefined' ? window.location.pathname : '';
 
     // Hide burger menu on Welcome, Signup, and Mainplay map;
     // show it on story pages (prologue, chapters, epilogue, etc.).
