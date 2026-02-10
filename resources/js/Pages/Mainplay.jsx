@@ -878,7 +878,7 @@ export default function Mainplay() {
                                                 <>
                                                     {/* Profile extension – wooden plaque (only when Profile tab is clicked; bounce-out on close) */}
                                                     {(showProfileExtension || profileClosing) && (
-                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[14rem] sm:-mt-[16rem] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
+                                                    <div className={`group relative z-[30] pointer-events-auto flex flex-col items-center justify-center w-full max-w-5xl -mt-[2%] ml-[32rem] sm:ml-[36rem] transition-transform duration-200 origin-center hover:scale-[1.01] cursor-pointer ${profileClosing ? 'animate-bounce-out' : 'animate-bounce-in'}`}>
                                                         <div className="relative w-full flex flex-col items-center p-16 sm:p-20 min-h-[16rem] sm:min-h-[20rem]">
                                                             <img
                                                                 src="/assets/img/tabframe.webp"
