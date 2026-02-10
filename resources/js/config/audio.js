@@ -221,5 +221,6 @@ export const AUDIO = {
         incorrect: `${BASE}/bgm/SFX - incorrect.MP3`,
         star: `${BASE}/gateofgratitude/Tap the star sfx.wav`,
         starClick: `${BASE}/bgm/SFX - STAR FRAME 20.MP3`,
+        platformStep: `${BASE}/gateofgratitude/correct step of platform.wav`,
     },
 };

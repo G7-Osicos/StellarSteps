@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
+import { useAudio } from '@/contexts/AudioContext';
+import { AUDIO } from '@/config/audio';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function Signup() {
     const { errors: pageErrors } = usePage().props || {};
+    const { playSFX } = useAudio() ?? {};
     const rightPageRef = useRef(null);
     const tapeRef = useRef(null);
     const formRef = useRef(null);
@@ -97,6 +100,9 @@ export default function Signup() {
     };
 
     const selectHero = () => {
+        if (AUDIO.sfx?.platformStep && playSFX) {
+            playSFX(AUDIO.sfx.platformStep);
+        }
         setRole('hero');
         setGuardianName('');
         setHeroCode('');
@@ -107,6 +113,9 @@ export default function Signup() {
     };
 
     const selectGuardian = () => {
+        if (AUDIO.sfx?.platformStep && playSFX) {
+            playSFX(AUDIO.sfx.platformStep);
+        }
         setRole('guardian');
         setHeroName('');
         setAge('');
