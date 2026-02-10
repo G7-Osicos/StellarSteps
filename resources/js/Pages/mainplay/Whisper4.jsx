@@ -14,11 +14,19 @@ function shuffleChoices(incorrect, correct) {
 export default function Whisper4() {
     const { playVoice, stopVoice, playSFX } = useAudio() ?? {};
     const [step, setStep] = useState(0);
+    const [showChoices, setShowChoices] = useState(false);
     const choicesRef = useRef(null);
 
     useEffect(() => {
+        if (step !== 1) setShowChoices(false);
         const src = AUDIO.whisper4?.voice?.[step];
-        if (src && playVoice) playVoice(src);
+        if (!src || !playVoice) return () => stopVoice?.();
+        // Step 1: Marky's VO — show choices only after narration ends
+        if (step === 1) {
+            playVoice(src, 1, () => setShowChoices(true));
+            return () => stopVoice?.();
+        }
+        playVoice(src);
         return () => stopVoice?.();
     }, [step, playVoice, stopVoice]);
 
@@ -195,8 +203,8 @@ export default function Whisper4() {
                     </div>
                 </div>
 
-                {/* Step 1: Choice pop-up — overlay with darkened background, centered (same as Gate of Gratitude) */}
-                {step === 1 && (() => {
+                {/* Step 1: Choice pop-up — only after Marky's VO ("He isn't a monster...") finishes */}
+                {step === 1 && showChoices && (() => {
                     if (!choicesRef.current) {
                         choicesRef.current = shuffleChoices(
                             { text: CHOICE_A, isCorrect: false },
