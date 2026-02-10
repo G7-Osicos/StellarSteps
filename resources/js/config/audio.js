@@ -178,7 +178,7 @@ export const AUDIO = {
 
     epilogue1Attic: {
         voice: [
-            null, // Step 1: Lola "Leo! Dinner time! Did you wash your hands?"
+            `${BASE}/Lola.mp3`, // Step 1: Lola "Leo! Dinner time! Did you wash your hands?"
             `${BASE}/Leo/Opo, Lola! I${'\u2019'}m coming.m4a`, // Step 2: "Opo, Lola! I'm coming!"
             `${BASE}/ins/Narrator16.m4a`, // Step 3: "Leo climbs down the ladder. He is First Grader, though he is taller, a little, a little bolder... and a great deal more polite."
         ],

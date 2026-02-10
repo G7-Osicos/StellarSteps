@@ -23,6 +23,7 @@ export default function Epilogue1Attic() {
     }, [playBGM, stopBGM]);
 
     useEffect(() => {
+        // Step 1: play Lola immediately (browsers block audio if delayed too long after user gesture)
         const idx = step === 1 ? 0 : step === 2 && step2Phase === 'leo2left' ? 1 : step === 3 ? 2 : null;
         const src = idx != null && AUDIO.epilogue1Attic?.voice ? AUDIO.epilogue1Attic.voice[idx] : null;
         if (src && playVoice) playVoice(src);
