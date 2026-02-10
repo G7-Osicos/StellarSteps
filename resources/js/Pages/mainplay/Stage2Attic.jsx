@@ -132,7 +132,8 @@ export default function Stage2Attic() {
 
         const progress = Math.min(100, Math.round((clearedPixels / totalPixels) * 100));
         setWipeProgress(progress);
-        if (progress >= 90 && !heroCongratsVisible && shakePhase === 'none') {
+        // Only show "Well done" after user has dismissed the "Wipe the screen" instruction AND wiped 90%+
+        if (progress >= 90 && !showPostClickNarration && !heroCongratsVisible && shakePhase === 'none') {
             setHeroCongratsVisible(true);
             setHeroCongratsStep(0);
         }
