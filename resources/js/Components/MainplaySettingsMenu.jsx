@@ -7,8 +7,24 @@ import { useAudio } from '@/contexts/AudioContext';
  * Screen Brightness, Volume, and Mute — so users can adjust settings from any page.
  */
 export default function MainplaySettingsMenu({ className = '' }) {
-    const currentUrl =
-        typeof window !== 'undefined' ? window.location.pathname : '';
+    const [currentUrl, setCurrentUrl] = useState(
+        typeof window !== 'undefined' ? window.location.pathname : ''
+    );
+
+    // Keep the menu in sync with Inertia navigation (this component is mounted
+    // outside the Inertia tree, so it won't automatically re-render on route changes).
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const update = () => setCurrentUrl(window.location.pathname);
+        window.addEventListener('popstate', update);
+        document.addEventListener('inertia:navigate', update);
+        document.addEventListener('inertia:finish', update);
+        return () => {
+            window.removeEventListener('popstate', update);
+            document.removeEventListener('inertia:navigate', update);
+            document.removeEventListener('inertia:finish', update);
+        };
+    }, []);
 
     // Hide burger menu on Welcome, Signup, and Mainplay map;
     // show it on story pages (prologue, chapters, epilogue, etc.).
