@@ -713,9 +713,9 @@ export default function Mainplay() {
                                     {/* Left page */}
                                     <div className="w-1/2 h-full relative flex items-center justify-center px-[5%] -ml-4 md:-ml-6">
                                         {activeMainTab === 'help' ? (
-                                            <div className="flex flex-col gap-7 md:gap-9 items-start justify-center w-full max-w-md pointer-events-auto">
+                                            <div className="flex flex-col gap-8 md:gap-10 items-start justify-center w-full max-w-md pointer-events-auto">
                                                 <div className="flex flex-col items-start gap-2">
-                                                    <div className="text-amber-800 text-xl sm:text-2xl font-extrabold tracking-wide">
+                                                    <div className="text-amber-800 text-2xl sm:text-3xl font-extrabold tracking-wide">
                                                         Welcome to
                                                     </div>
                                                     <img
@@ -727,19 +727,19 @@ export default function Mainplay() {
                                                     />
                                                 </div>
                                                 {/* Leo intro */}
-                                                <div className="flex items-center gap-4 sm:gap-5">
+                                                <div className="flex items-center gap-5 sm:gap-6">
                                                     <img
                                                         src="/assets/img/Leo0.webp"
                                                         alt="Leo"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="w-32 sm:w-36 md:w-40 h-auto object-contain pointer-events-none"
+                                                        className="w-36 sm:w-40 md:w-44 h-auto object-contain pointer-events-none"
                                                     />
                                                     <div className="flex flex-col text-left">
-                                                        <div className="text-amber-800 text-2xl sm:text-3xl font-extrabold">
+                                                        <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-extrabold">
                                                             This is Leo
                                                         </div>
-                                                        <div className="text-black text-lg sm:text-xl font-bold leading-relaxed">
+                                                        <div className="text-black text-xl sm:text-2xl font-bold leading-relaxed">
                                                             He is in Grade 1.
                                                             <br />
                                                             He loves adventures.
@@ -747,19 +747,19 @@ export default function Mainplay() {
                                                     </div>
                                                 </div>
                                                 {/* Marky intro */}
-                                                <div className="flex items-center gap-4 sm:gap-5">
+                                                <div className="flex items-center gap-5 sm:gap-6">
                                                     <img
                                                         src="/assets/img/Marky1.webp"
                                                         alt="Marky"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="w-28 sm:w-32 md:w-36 h-auto object-contain pointer-events-none"
+                                                        className="w-32 sm:w-36 md:w-40 h-auto object-contain pointer-events-none"
                                                     />
                                                     <div className="flex flex-col text-left">
-                                                        <div className="text-amber-800 text-2xl sm:text-3xl font-extrabold">
+                                                        <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-extrabold">
                                                             This is Marky
                                                         </div>
-                                                        <div className="text-black text-lg sm:text-xl font-bold leading-relaxed">
+                                                        <div className="text-black text-xl sm:text-2xl font-bold leading-relaxed">
                                                             He guides Leo and
                                                             <br />
                                                             helps explain things.
@@ -776,13 +776,13 @@ export default function Mainplay() {
 
                                     {/* Right page */}
                                     <div className="w-1/2 h-full relative overflow-visible flex items-center justify-center">
-                                        <div className="h-full w-[92%] flex flex-col items-center justify-start overflow-visible pt-[2%] pb-[2%]">
+                                        <div className="h-full w-[92%] flex flex-col items-center justify-center overflow-visible pt-[2%] pb-[2%]">
                                             {activeMainTab === 'help' ? (
-                                                <div className="w-full h-full flex flex-col items-start justify-start pointer-events-auto px-[4%]">
-                                                    <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                                                <div className="w-full max-w-md flex flex-col items-start justify-start pointer-events-auto px-[4%] self-center translate-x-[6%]">
+                                                    <div className="text-amber-800 text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
                                                         OUR STORY
                                                     </div>
-                                                    <div className="space-y-2 text-amber-900 text-base sm:text-lg font-bold leading-relaxed max-w-md text-justify">
+                                                    <div className="space-y-2 text-amber-900 text-lg sm:text-xl font-bold leading-relaxed max-w-md text-justify">
                                                         <p>Inside the book,</p>
                                                         <p>Some places are broken.</p>
                                                         <p>Some places are messy.</p>
@@ -798,7 +798,7 @@ export default function Mainplay() {
                                                         <p>Stars help fix the story!</p>
                                                         <p className="mt-4">You help by:</p>
                                                     </div>
-                                                    <div className="mt-6 flex items-center gap-6 sm:gap-10">
+                                                    <div className="mt-7 flex items-center gap-6 sm:gap-10">
                                                         {[
                                                             { label: 'cleaning up' },
                                                             { label: 'being kind' },
@@ -813,7 +813,7 @@ export default function Mainplay() {
                                                                     className="w-10 h-10 sm:w-12 sm:h-12 object-contain [filter:drop-shadow(0_0_2px_#fef08a)_drop-shadow(0_0_8px_#facc15)_drop-shadow(0_0_16px_#eab308)]"
                                                                     aria-hidden
                                                                 />
-                                                                <div className="text-amber-900 text-xs sm:text-sm font-bold text-center whitespace-nowrap">
+                                                                <div className="text-amber-900 text-sm sm:text-base font-bold text-center whitespace-nowrap">
                                                                     {item.label}
                                                                 </div>
                                                             </div>

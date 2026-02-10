@@ -80,6 +80,7 @@ export default function Cloud2Game() {
     const [isBouncing, setIsBouncing] = useState(false);
     const [isShifting, setIsShifting] = useState(false);
     const [hasWon, setHasWon] = useState(false);
+    const [winPhase, setWinPhase] = useState('message'); // 'message' | 'flash'
     const [jumpArc, setJumpArc] = useState(null);
     const [shiftContent, setShiftContent] = useState(null); // [newUpper, newMiddle, oldUpper, oldMiddle, oldLower] during shift
     const [showInstruction, setShowInstruction] = useState(true);
@@ -205,23 +206,33 @@ export default function Cloud2Game() {
 
     const displayPlatforms = shiftContent ?? platforms;
 
+    // When player wins: show big message, then brief white flash, then go to next route
     useEffect(() => {
-        if (hasWon) {
-            const t = setTimeout(() => {
-                router.visit(route('mainplay.cloud3'));
-            }, 1200);
-            return () => clearTimeout(t);
-        }
+        if (!hasWon) return;
+        setWinPhase('message');
+        const t1 = setTimeout(() => setWinPhase('flash'), 1400);
+        const t2 = setTimeout(() => {
+            router.visit(route('mainplay.cloud3'));
+        }, 1800);
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
     }, [hasWon]);
 
     if (hasWon) {
         return (
             <>
                 <Head title="Cloud 2 Game - You Win!" />
-                <div className="fixed inset-0 z-[100] w-full h-full bg-sky-400 flex flex-col items-center justify-center gap-6 px-4 fade-in-soft">
-                    <div className="cartoon-thin text-3xl sm:text-4xl font-bold text-center drop-shadow text-white" style={{ WebkitTextStroke: '2px black' }}>
-                        You did it! Score: {WIN_SCORE}
-                    </div>
+                <div className="fixed inset-0 z-[100] w-full h-full bg-sky-400 flex flex-col items-center justify-center gap-6 px-4 fade-in-soft relative overflow-hidden">
+                    {winPhase !== 'flash' && (
+                        <div className="cartoon-thin text-4xl sm:text-5xl md:text-6xl font-bold text-center drop-shadow text-white px-4" style={{ WebkitTextStroke: '2px black' }}>
+                            You did it! Score: {WIN_SCORE}
+                        </div>
+                    )}
+                    {winPhase === 'flash' && (
+                        <div className="absolute inset-0 bg-white transition-opacity duration-200" />
+                    )}
                 </div>
             </>
         );

@@ -11,7 +11,6 @@ const PHASE_GONE = 'gone';
 
 const DELAY_BEFORE_LEO_MS = 800;
 const DELAY_BEFORE_NARRATION_MS = 500;
-const DELAY_BEFORE_GONE_MS = 5000;
 
 export default function Welcome() {
     const [bookLoaded, setBookLoaded] = useState(false);
@@ -26,21 +25,19 @@ export default function Welcome() {
             () => setPhase(PHASE_NARRATION),
             DELAY_BEFORE_LEO_MS + DELAY_BEFORE_NARRATION_MS
         );
-        const t3 = setTimeout(
-            () => setPhase(PHASE_GONE),
-            DELAY_BEFORE_LEO_MS + DELAY_BEFORE_NARRATION_MS + DELAY_BEFORE_GONE_MS
-        );
         return () => {
             clearTimeout(t1);
             clearTimeout(t2);
-            clearTimeout(t3);
         };
     }, []);
 
-    // Play Leo's welcome line when narration bubble appears
+    // Play Leo's welcome line when narration bubble appears,
+    // and only hide Leo + bubble after the voice line finishes.
     useEffect(() => {
         if (phase === PHASE_NARRATION && AUDIO.welcome?.leoIntro && playVoice) {
-            playVoice(AUDIO.welcome.leoIntro);
+            playVoice(AUDIO.welcome.leoIntro, 1, () => {
+                setPhase(PHASE_GONE);
+            });
         }
         if (phase === PHASE_GONE && stopVoice) {
             stopVoice();
@@ -48,7 +45,7 @@ export default function Welcome() {
         return () => {
             stopVoice?.();
         };
-    }, [phase, playVoice, stopVoice]);
+    }, [phase, playVoice, stopVoice, setPhase]);
 
     // Trigger Leo slide-in after phase becomes LEO so CSS transition runs
     useEffect(() => {
