@@ -99,10 +99,10 @@ export default function MainplaySettingsMenu({ className = '' }) {
                             <button
                                 type="button"
                                 onClick={() => updateMuted(!muted)}
-                                className={`w-12 h-6 rounded-full transition-colors ${muted ? 'bg-amber-200' : 'bg-amber-600'}`}
+                                className={`w-12 h-6 rounded-full transition-colors ${muted ? 'bg-amber-600' : 'bg-amber-200'}`}
                                 aria-pressed={muted}
                             >
-                                <span className={`block w-5 h-5 rounded-full bg-white shadow transition-transform ${muted ? 'translate-x-0.5' : 'translate-x-7'}`} />
+                                <span className={`block w-5 h-5 rounded-full bg-white shadow transition-transform ${muted ? 'translate-x-7' : 'translate-x-0.5'}`} />
                             </button>
                         </div>
                     </div>

@@ -155,23 +155,32 @@ export function AudioProvider({ children }) {
     const updateVolume = useCallback(
         (v) => {
             const next = Math.min(100, Math.max(0, Number(v) || 0));
-            const gain = muted ? 0 : next / 100;
+            updateSettings({ volume: next });
+
+            // Immediate effect: scale all active audio by new volume, honoring mute.
+            const baseGain = next / 100;
+            const gain = muted ? 0 : baseGain;
             if (bgmRef.current && Number.isFinite(gain)) bgmRef.current.volume = gain;
             if (ambientRef.current && Number.isFinite(gain)) ambientRef.current.volume = gain * 0.6;
             if (voiceRef.current && Number.isFinite(gain)) {
-                voiceRef.current.volume = Math.min(1, Math.max(0, gain * (voiceMultRef.current || 1)));
+                voiceRef.current.volume = Math.min(
+                    1,
+                    Math.max(0, gain * (voiceMultRef.current || 1)),
+                );
             }
             if (sfxRef.current && Number.isFinite(gain)) {
                 sfxRef.current.volume = gain;
             }
-            updateSettings({ volume: next });
         },
         [muted, updateSettings]
     );
 
     const updateMuted = useCallback(
         (m) => {
-            const gain = m ? 0 : Math.min(1, Math.max(0, (Number(volume) || 80) / 100));
+            updateSettings({ muted: m });
+
+            // Apply new gain based on updated muted state.
+            const gain = getGain();
             if (bgmRef.current && Number.isFinite(gain)) bgmRef.current.volume = gain;
             if (ambientRef.current && Number.isFinite(gain)) ambientRef.current.volume = gain * 0.6;
             if (voiceRef.current && Number.isFinite(gain)) {
@@ -180,7 +189,6 @@ export function AudioProvider({ children }) {
             if (sfxRef.current && Number.isFinite(gain)) {
                 sfxRef.current.volume = gain;
             }
-            updateSettings({ muted: m });
         },
         [volume, updateSettings]
     );
