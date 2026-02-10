@@ -104,11 +104,16 @@ export default function Stage1Attic() {
         }
     }, [overlayPhase, narrationStep, playVoice]);
 
+    const LADDER_COUNT_VOICES = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/assets/audio/Leo/${n}.m4a`);
+
     function onLadderClick() {
         if (!narrationDone) return;
         setHandVisible(false);
         setStepCount((prev) => {
             const next = Math.min(8, prev + 1);
+            if (next >= 1 && next <= 8 && playVoice) {
+                playVoice(LADDER_COUNT_VOICES[next - 1]);
+            }
             if (next === 8) {
                 // Start climb animation, then move to the Stage 2 attic page.
                 setLeoSprite('climb');

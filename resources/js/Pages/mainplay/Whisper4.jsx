@@ -1,22 +1,38 @@
 import { Head, router } from '@inertiajs/react';
 import BackToMapButton from '@/Components/BackToMapButton';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '@/contexts/AudioContext';
 import { AUDIO } from '@/config/audio';
 
+const CHOICE_A = 'Go away, scary Wolf!';
+const CHOICE_B = 'Are you okay? Can I help you?';
+
+function shuffleChoices(incorrect, correct) {
+    return Math.random() < 0.5 ? [incorrect, correct] : [correct, incorrect];
+}
+
 export default function Whisper4() {
-    const { playVoice, stopVoice } = useAudio() ?? {};
+    const { playVoice, stopVoice, playSFX } = useAudio() ?? {};
     const [step, setStep] = useState(0);
+    const choicesRef = useRef(null);
 
     useEffect(() => {
         const src = AUDIO.whisper4?.voice?.[step];
         if (src && playVoice) playVoice(src);
         return () => stopVoice?.();
     }, [step, playVoice, stopVoice]);
-    const handleChoice = (choice) => {
+
+    useEffect(() => {
+        if (step !== 1) choicesRef.current = null;
+    }, [step]);
+
+    const handleChoice = (isCorrect) => {
         stopVoice?.();
-        if (choice === 'B') setStep(2);
-        // TODO: Choice A – navigate or show different outcome
+        if (!isCorrect && AUDIO.sfx?.incorrect && playSFX) playSFX(AUDIO.sfx.incorrect);
+        if (isCorrect) {
+            if (AUDIO.sfx?.correct && playSFX) playSFX(AUDIO.sfx.correct);
+            setStep(2);
+        }
     };
 
     return (
@@ -179,31 +195,36 @@ export default function Whisper4() {
                     </div>
                 </div>
 
-                {/* Choice buttons – upper right, step 1 only */}
-                {step === 1 && (
-                <div className="absolute top-36 sm:top-44 right-28 sm:right-36 z-[120] flex flex-col gap-3 max-w-[280px] sm:max-w-[320px]">
-                    <button
-                        type="button"
-                        onClick={() => handleChoice('A')}
-                        className="w-full rounded-xl bg-gray-800/90 text-white px-4 py-3 sm:px-5 sm:py-4 border border-white/30 flex items-center gap-3 hover:bg-gray-700/90 transition-colors text-left"
-                    >
-                        <svg className="w-5 h-5 flex-shrink-0 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                        <span className="cartoon-thin text-sm sm:text-base">Choice A: Go away, scary Wolf!</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleChoice('B')}
-                        className="w-full rounded-xl bg-gray-800/90 text-white px-4 py-3 sm:px-5 sm:py-4 border border-white/30 flex items-center gap-3 hover:bg-gray-700/90 transition-colors text-left"
-                    >
-                        <svg className="w-5 h-5 flex-shrink-0 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                        <span className="cartoon-thin text-sm sm:text-base">Choice B: Are you okay? Can I help you?</span>
-                    </button>
-                </div>
-                )}
+                {/* Step 1: Choice pop-up — overlay with darkened background, centered (same as Gate of Gratitude) */}
+                {step === 1 && (() => {
+                    if (!choicesRef.current) {
+                        choicesRef.current = shuffleChoices(
+                            { text: CHOICE_A, isCorrect: false },
+                            { text: CHOICE_B, isCorrect: true }
+                        );
+                    }
+                    const choices = choicesRef.current;
+                    return (
+                        <div className="fixed inset-0 z-[110] bg-black/50 flex items-center justify-center p-4 sm:p-6">
+                            <div className="flex flex-col gap-4 sm:gap-5 w-full max-w-xl">
+                                <button
+                                    type="button"
+                                    className="rounded-2xl bg-gray-800/95 text-white px-6 py-5 sm:px-8 sm:py-6 text-left text-base sm:text-lg border border-white/30 hover:bg-gray-700/95 transition-colors cartoon-thin"
+                                    onClick={() => handleChoice(choices[0].isCorrect)}
+                                >
+                                    Choice A: {choices[0].text}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="rounded-2xl bg-gray-800/95 text-white px-6 py-5 sm:px-8 sm:py-6 text-left text-base sm:text-lg border border-white/30 hover:bg-gray-700/95 transition-colors cartoon-thin"
+                                    onClick={() => handleChoice(choices[1].isCorrect)}
+                                >
+                                    Choice B: {choices[1].text}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
         </>
     );
