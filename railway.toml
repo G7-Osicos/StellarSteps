@@ -1,0 +1,8 @@
+# Railway deployment config for Stellar Steps (Laravel)
+
+[build]
+builder = "dockerfile"
+
+[deploy]
+# Run migrations only; do not cache config so DB_CONNECTION and other env vars are read at runtime
+releaseCommand = "php artisan migrate --force"

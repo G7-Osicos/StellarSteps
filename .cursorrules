@@ -1,0 +1,4 @@
+# Stellar Steps Laravel - Project Rules
+
+## Build
+Always run `npm run build` after making any code changes to ensure the production build is up to date.

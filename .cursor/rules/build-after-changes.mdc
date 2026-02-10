@@ -1,0 +1,18 @@
+---
+description: Run npm run build after making changes to the project
+alwaysApply: true
+---
+
+# Build After Changes
+
+After making any code changes to this project, run the production build so compiled assets are up to date:
+
+```bash
+npm run build
+```
+
+- Run this **after** editing frontend/JS/React (e.g. `resources/js/`, `resources/css/`), config, or any change that affects the Vite bundle.
+- Use PowerShell-compatible command separators (`;` not `&&`) when chaining commands.
+- If the change is purely backend (e.g. PHP only, no JS/CSS), you may skip the build only when the user has not asked to build.
+
+When in doubt, run `npm run build` after changes.
