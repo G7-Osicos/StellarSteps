@@ -29,6 +29,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && mkdir -p /etc/nginx/conf.d
 
 COPY nginx.conf.template /etc/nginx/templates/
+COPY docker/php-fpm-railway.conf /usr/local/etc/php-fpm.d/zz-railway.conf
 
 EXPOSE 8000
 # Railway sets PORT at runtime

@@ -61,7 +61,8 @@ export PORT
 # Substitute PORT into nginx config (use conf.d - more reliably included than sites-enabled)
 envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/railway.conf
 
-# Start PHP-FPM in background, then Nginx in foreground
+# Start PHP-FPM in background, wait for it to be ready, then Nginx in foreground
 php-fpm &
+sleep 2
 echo "Listening on 0.0.0.0:$PORT"
 exec nginx -g "daemon off;"
