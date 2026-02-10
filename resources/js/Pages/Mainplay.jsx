@@ -733,10 +733,10 @@ export default function Mainplay() {
                                                         alt="Leo"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="w-36 sm:w-40 md:w-44 h-auto object-contain pointer-events-none"
+                                                        className="w-40 sm:w-44 md:w-48 h-auto object-contain pointer-events-none -ml-2 sm:-ml-4"
                                                     />
                                                     <div className="flex flex-col text-left">
-                                                        <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-extrabold">
+                                                        <div className="rounded-sans text-amber-800 text-2xl sm:text-3xl md:text-4xl font-extrabold">
                                                             This is Leo
                                                         </div>
                                                         <div className="text-black text-xl sm:text-2xl font-bold leading-relaxed">
@@ -753,10 +753,10 @@ export default function Mainplay() {
                                                         alt="Marky"
                                                         loading="lazy"
                                                         decoding="async"
-                                                        className="w-32 sm:w-36 md:w-40 h-auto object-contain pointer-events-none"
+                                                        className="w-36 sm:w-40 md:w-44 h-auto object-contain pointer-events-none -ml-2 sm:-ml-4"
                                                     />
                                                     <div className="flex flex-col text-left">
-                                                        <div className="text-amber-800 text-2xl sm:text-3xl md:text-4xl font-extrabold">
+                                                        <div className="rounded-sans text-amber-800 text-2xl sm:text-3xl md:text-4xl font-extrabold">
                                                             This is Marky
                                                         </div>
                                                         <div className="text-black text-xl sm:text-2xl font-bold leading-relaxed">
@@ -779,7 +779,7 @@ export default function Mainplay() {
                                         <div className="h-full w-[92%] flex flex-col items-center justify-center overflow-visible pt-[2%] pb-[2%]">
                                             {activeMainTab === 'help' ? (
                                                 <div className="w-full max-w-md flex flex-col items-start justify-start pointer-events-auto px-[4%] self-center translate-x-[6%]">
-                                                    <div className="text-amber-800 text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                                                    <div className="rounded-sans text-amber-800 text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-wide">
                                                         OUR STORY
                                                     </div>
                                                     <div className="space-y-2 text-amber-900 text-lg sm:text-xl font-bold leading-relaxed max-w-md text-justify">
@@ -789,14 +789,14 @@ export default function Mainplay() {
                                                         <p>Some friends need help.</p>
                                                         <p>Leo and Marky go on an adventure.</p>
                                                         <p>They fix the story together.</p>
-                                                        <p className="mt-4 text-amber-800">
+                                                        <p className="mt-4 rounded-sans text-amber-800 font-bold">
                                                             But they need YOU!
                                                         </p>
                                                         <p className="mt-2">
                                                             Every good choice earns a star.
                                                         </p>
                                                         <p>Stars help fix the story!</p>
-                                                        <p className="mt-4">You help by:</p>
+                                                        <p className="mt-4 rounded-sans font-bold text-amber-800">You help by:</p>
                                                     </div>
                                                     <div className="mt-7 flex items-center gap-6 sm:gap-10">
                                                         {[
