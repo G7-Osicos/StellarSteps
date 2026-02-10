@@ -51,6 +51,7 @@ class MainplayController extends Controller
             // Apply completion from URL and persist only for heroes (guardians are read-only monitors)
             if ($progressOwner->role === 'hero') {
                 $updated = false;
+                $chapterTimes = $progressOwner->chapter_times ?? [];
 
                 if (str_contains($url, 'prologue_castle_hint=1')) {
                     $stages[0] = true;
@@ -61,6 +62,12 @@ class MainplayController extends Controller
                     $stages[1] = true;
                     $goldStars = max($goldStars, 1);
                     $updated = true;
+                    $now = now()->toIso8601String();
+                    $existing = $chapterTimes['chapter1'] ?? [];
+                    $chapterTimes['chapter1'] = [
+                        'started_at' => $existing['started_at'] ?? $now,
+                        'finished_at' => $now,
+                    ];
                 }
                 if (str_contains($url, 'chapter2_complete=1')) {
                     $stages[0] = true;
@@ -68,6 +75,12 @@ class MainplayController extends Controller
                     $stages[2] = true;
                     $goldStars = max($goldStars, 2);
                     $updated = true;
+                    $now = now()->toIso8601String();
+                    $existing = $chapterTimes['chapter2'] ?? [];
+                    $chapterTimes['chapter2'] = [
+                        'started_at' => $existing['started_at'] ?? $now,
+                        'finished_at' => $now,
+                    ];
                 }
                 if (str_contains($url, 'chapter3_complete=1')) {
                     $stages[0] = true;
@@ -76,6 +89,12 @@ class MainplayController extends Controller
                     $stages[3] = true;
                     $goldStars = max($goldStars, 3);
                     $updated = true;
+                    $now = now()->toIso8601String();
+                    $existing = $chapterTimes['chapter3'] ?? [];
+                    $chapterTimes['chapter3'] = [
+                        'started_at' => $existing['started_at'] ?? $now,
+                        'finished_at' => $now,
+                    ];
                 }
                 if (str_contains($url, 'all_complete=1')) {
                     $stages = [true, true, true, true, true];
@@ -86,8 +105,42 @@ class MainplayController extends Controller
                 if ($updated) {
                     $progressOwner->stages_completed = $stages;
                     $progressOwner->gold_stars = $goldStars;
+                    $progressOwner->chapter_times = $chapterTimes;
                     $progressOwner->save();
                 }
+            }
+
+            // Backfill chapter_times for heroes who completed chapters before we added tracking (so guardians see something)
+            if ($progressOwner->role === 'hero') {
+                $chapterTimes = $progressOwner->chapter_times ?? [];
+                $backfilled = false;
+                $ts = $progressOwner->updated_at?->toIso8601String() ?? now()->toIso8601String();
+                if (! empty($stages[1]) && empty($chapterTimes['chapter1']['finished_at'])) {
+                    $chapterTimes['chapter1'] = [
+                        'started_at' => $chapterTimes['chapter1']['started_at'] ?? $ts,
+                        'finished_at' => $ts,
+                    ];
+                    $backfilled = true;
+                }
+                if (! empty($stages[2]) && empty($chapterTimes['chapter2']['finished_at'])) {
+                    $chapterTimes['chapter2'] = [
+                        'started_at' => $chapterTimes['chapter2']['started_at'] ?? $ts,
+                        'finished_at' => $ts,
+                    ];
+                    $backfilled = true;
+                }
+                if (! empty($stages[3]) && empty($chapterTimes['chapter3']['finished_at'])) {
+                    $chapterTimes['chapter3'] = [
+                        'started_at' => $chapterTimes['chapter3']['started_at'] ?? $ts,
+                        'finished_at' => $ts,
+                    ];
+                    $backfilled = true;
+                }
+                if ($backfilled) {
+                    $progressOwner->chapter_times = $chapterTimes;
+                    $progressOwner->save();
+                }
+                $chapterTimes = $progressOwner->chapter_times ?? [];
             }
         } else {
             // Guest: derive from URL only (no persistence)
